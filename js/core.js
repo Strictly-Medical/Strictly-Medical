@@ -10,11 +10,12 @@ window.addEventListener('resize',resize);resize();
 const ART={};if(typeof Image!=='undefined')for(const[k,v]of Object.entries(SPRITES)){const im=new Image();im.src='assets/sprites/'+k+'.png';ART[k]=Object.assign({im},v)}
 const art=n=>{const a=ART[n];return a&&a.im.complete&&a.im.naturalWidth?a:null};
 // Animated character sheets: frames side by side, stored at 3x game size. w/h/ax/ay are in game pixels.
-// Sized so a knight stands about as tall as a doorway, well under the trees.
-const CHARS={knight:{src:'knight-walk',frames:5,w:27.89,h:44,ax:17.53,ay:43.71,walk:[0,1,2,3],idle:4}};
+const CHARS={knight:{src:'knight-walk',frames:5,w:38.67,h:61,ax:24.3,ay:60.6,walk:[0,1,2,3],idle:4}};
 if(typeof Image!=='undefined')for(const c of Object.values(CHARS)){const im=new Image();im.onload=()=>{const fw=im.naturalWidth/c.frames,fh=im.naturalHeight;c.fw=fw;c.fh=fh;
   const wc=document.createElement('canvas');wc.width=im.naturalWidth;wc.height=fh;const x=wc.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-atop';x.fillStyle='#fff';x.fillRect(0,0,wc.width,fh);c.white=wc;c.ok=true};im.src='assets/sprites/'+c.src+'.png';c.im=im}
-function drawArt(n,sx,sy,flip){const a=art(n);if(!a)return false;if(flip){ctx.save();ctx.translate(sx,sy);ctx.scale(-1,1);ctx.drawImage(a.im,-a.ax,-a.ay,a.w,a.h);ctx.restore()}else ctx.drawImage(a.im,sx-a.ax,sy-a.ay,a.w,a.h);return true}
+// World scale. Characters are about 60px tall, so village props, buildings and code-drawn figures are scaled up from their original sizes.
+const FIG=1.24,BS=1.45,PROP={tree:1.5,well:1.35,banner:1.4};
+function drawArt(n,sx,sy,flip,k=1){const a=art(n);if(!a)return false;ctx.save();ctx.translate(sx,sy);ctx.scale(flip?-k:k,k);ctx.drawImage(a.im,-a.ax,-a.ay,a.w,a.h);ctx.restore();return true}
 const RUNES={'24,20':'rune2','22,20':'rune1','26,20':'rune1','24,18':'rune1','24,22':'rune1'};
 /* ---------- helpers ---------- */
 const iso=(x,y)=>[(x-y)*32,(x+y)*16];

@@ -51,10 +51,10 @@ function drawBuildingTile(x,y,b,alpha){
   const[A,B,C,D]=quad(x,y);const hA=hf(y),hB=hf(y),hC=hf(y+1),hD=hf(y+1),we=b.eave-6;
   ctx.globalAlpha=alpha;
   if(y===b.y1){poly([D,C,[C[0],C[1]-we],[D[0],D[1]-we]],shade(b.wall,-.28));
-    if(x===Math.floor((b.x0+b.x1)/2)){const d1=[D[0]+(C[0]-D[0])*.3,D[1]+(C[1]-D[1])*.3],d2=[D[0]+(C[0]-D[0])*.7,D[1]+(C[1]-D[1])*.7];poly([d1,d2,[d2[0],d2[1]-24],[d1[0],d1[1]-24]],'#3a2a1e');ctx.fillStyle='rgba(240,180,90,.5)';ctx.fillRect((d1[0]+d2[0])/2-1,(d1[1]+d2[1])/2-14,2,2)}
-    else{const w1=[D[0]+(C[0]-D[0])*.35,D[1]+(C[1]-D[1])*.35],w2=[D[0]+(C[0]-D[0])*.65,D[1]+(C[1]-D[1])*.65];poly([[w1[0],w1[1]-14],[w2[0],w2[1]-14],[w2[0],w2[1]-24],[w1[0],w1[1]-24]],'#f0c070')}}
+    if(x===Math.floor((b.x0+b.x1)/2)){const d1=[D[0]+(C[0]-D[0])*.3,D[1]+(C[1]-D[1])*.3],d2=[D[0]+(C[0]-D[0])*.7,D[1]+(C[1]-D[1])*.7];poly([d1,d2,[d2[0],d2[1]-24*BS],[d1[0],d1[1]-24*BS]],'#3a2a1e');ctx.fillStyle='rgba(240,180,90,.5)';ctx.fillRect((d1[0]+d2[0])/2-1,(d1[1]+d2[1])/2-14*BS,2,2)}
+    else{const w1=[D[0]+(C[0]-D[0])*.35,D[1]+(C[1]-D[1])*.35],w2=[D[0]+(C[0]-D[0])*.65,D[1]+(C[1]-D[1])*.65];poly([[w1[0],w1[1]-16*BS],[w2[0],w2[1]-16*BS],[w2[0],w2[1]-26*BS],[w1[0],w1[1]-26*BS]],'#f0c070')}}
   if(x===b.x1){poly([B,C,[C[0],C[1]-hC+4],[B[0],B[1]-hB+4]],shade(b.wall,-.12));
-    const m1=[B[0]+(C[0]-B[0])*.35,B[1]+(C[1]-B[1])*.35],m2=[B[0]+(C[0]-B[0])*.65,B[1]+(C[1]-B[1])*.65];poly([[m1[0],m1[1]-14],[m2[0],m2[1]-14],[m2[0],m2[1]-24],[m1[0],m1[1]-24]],'#e8b860')}
+    const m1=[B[0]+(C[0]-B[0])*.35,B[1]+(C[1]-B[1])*.35],m2=[B[0]+(C[0]-B[0])*.65,B[1]+(C[1]-B[1])*.65];poly([[m1[0],m1[1]-16*BS],[m2[0],m2[1]-16*BS],[m2[0],m2[1]-26*BS],[m1[0],m1[1]-26*BS]],'#e8b860')}
   const back=(y+.5)<mid;
   poly([[A[0],A[1]-hA],[B[0],B[1]-hB],[C[0],C[1]-hC],[D[0],D[1]-hD]],shade(b.roof,back?.1:-.15),'rgba(0,0,0,.25)',1);
   ctx.globalAlpha=1;
@@ -79,10 +79,10 @@ function drawSpriteFigure(u,L,C,sx,sy,o){
     if(u.atkT>.08){ctx.strokeStyle=`rgba(245,235,205,${u.atkT*3})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(8,-26,24,-1.6,.6);ctx.stroke()}}
   ctx.restore();ctx.globalAlpha=1;
 }
-const figTop=u=>{const C=u.look&&u.look.sprite&&CHARS[u.look.sprite];return C&&C.ok?C.h*(u.scale||1):42};
+const figTop=u=>{const C=u.look&&u.look.sprite&&CHARS[u.look.sprite];return C&&C.ok?C.h*(u.scale||1):42*FIG*(u.scale||1)};
 function drawFigure(u,L,sx,sy,o={}){
   const C=L.sprite&&CHARS[L.sprite];if(C&&C.ok){drawSpriteFigure(u,L,C,sx,sy,o);return}
-  const s=o.scale||u.scale||1,f=u.face||{x:0,y:1},sfx=f.x-f.y,sfy=f.x+f.y;
+  const s=(o.scale||u.scale||1)*FIG,f=u.face||{x:0,y:1},sfx=f.x-f.y,sfy=f.x+f.y;
   if(sfx!==0)u._dir=sfx<0?-1:1;const dir=u._dir||1,back=sfy<0;
   const walking=u.prog<1,ph=walking?Math.sin(u.prog*Math.PI*2):0,fl=u.flash>0,kneel=u.kneel||u.drink>0;
   ctx.save();ctx.translate(sx,sy);
@@ -125,7 +125,8 @@ function drawFigure(u,L,sx,sy,o={}){
   if(u.atkT>.08&&w==='sword'){ctx.strokeStyle=`rgba(245,235,205,${u.atkT*3})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(8,ty+10,20,-1.6,.6);ctx.stroke()}
   ctx.restore();ctx.globalAlpha=1;
 }
-function drawLying(sx,sy,L,col){
+function drawLying(sx,sy,L,col){ctx.save();ctx.translate(sx,sy);ctx.scale(FIG,FIG);ctx.translate(-sx,-sy);drawLying0(sx,sy,L,col);ctx.restore()}
+function drawLying0(sx,sy,L,col){
   ellipse(sx+2,sy+1,15,6,'rgba(0,0,0,.35)');
   ctx.fillStyle=shade(L.body,-.15);ctx.beginPath();ctx.ellipse(sx,sy-4,14,5.5,-.12,0,7);ctx.fill();
   if(L.tabard){ctx.fillStyle=L.tabard;ctx.beginPath();ctx.ellipse(sx+1,sy-5,7,3,-.12,0,7);ctx.fill()}
@@ -133,7 +134,8 @@ function drawLying(sx,sy,L,col){
   if(L.hair&&L.head!=='helm'){ctx.fillStyle=L.hair;ctx.beginPath();ctx.arc(sx-14,sy-7,4.5,Math.PI*.8,Math.PI*1.9);ctx.fill()}
   if(col){ctx.fillStyle=col;ctx.globalAlpha=.6;ctx.fillRect(sx-2,sy-8,9,2);ctx.globalAlpha=1}
 }
-function drawBoss(b,sx,sy){
+function drawBoss(b,sx,sy){ctx.save();ctx.translate(sx,sy);ctx.scale(1.25,1.25);ctx.translate(-sx,-sy);drawBoss0(b,sx,sy);ctx.restore()}
+function drawBoss0(b,sx,sy){
   ellipse(sx+3,sy+2,30,12,'rgba(0,0,0,.5)');
   const f=b.face,sfx=f.x-f.y;if(sfx)b._dir=sfx<0?-1:1;const dir=b._dir||1,fl=b.flash>0,br=Math.sin(SC.t*2)*1.5,dormant=b.state==='dormant';
   ctx.save();ctx.translate(sx,sy);ctx.scale(dir,1);
@@ -155,9 +157,10 @@ function drawBoss(b,sx,sy){
 }
 function drawObj(o){
   const[sx,sy]=iso(o.x+.5,o.y+.5);
-  if(o.type==='tree'&&drawArt('tree',sx,sy,hash(o.x,o.y)<.5))return;
-  if(o.type==='well'&&drawArt('well',sx,sy))return;
-  if(o.type==='banner'&&drawArt('banner',sx,sy,o.x>16))return;
+  const vk=n=>SC.kind==='village'?PROP[n]:1;
+  if(o.type==='tree'&&drawArt('tree',sx,sy,hash(o.x,o.y)<.5,vk('tree')))return;
+  if(o.type==='well'&&drawArt('well',sx,sy,false,vk('well')))return;
+  if(o.type==='banner'&&drawArt('banner',sx,sy,o.x>16+VO,vk('banner')))return;
   if(o.type==='rubble'&&drawArt('stub',sx,sy))return;
   if(o.type==='brazier'&&drawArt('brazier',sx,sy))return;
   if(o.type==='chest'&&drawArt(o.open?'chestOpen':'chest',sx,sy))return;
@@ -168,11 +171,11 @@ function drawObj(o){
   else if(o.type==='anvil'){ellipse(sx+2,sy,13,6,'rgba(0,0,0,.3)');ctx.fillStyle='#4a3a2a';ctx.fillRect(sx-6,sy-10,12,10);ctx.fillStyle='#4b4e55';ctx.beginPath();ctx.moveTo(sx-14,sy-16);ctx.lineTo(sx+12,sy-16);ctx.lineTo(sx+8,sy-10);ctx.lineTo(sx-10,sy-10);ctx.closePath();ctx.fill()}
   else if(o.type==='banner'){ctx.strokeStyle='#3a2a1e';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx,sy-60);ctx.stroke();const w=Math.sin(SC.t*3+o.x)*2;ctx.fillStyle='#e8dfca';ctx.beginPath();ctx.moveTo(sx+2,sy-58);ctx.lineTo(sx+20,sy-56+w);ctx.lineTo(sx+20,sy-30+w);ctx.lineTo(sx+11,sy-35+w);ctx.lineTo(sx+2,sy-30);ctx.closePath();ctx.fill();ctx.fillStyle='#b3362e';ctx.fillRect(sx+9,sy-52+w*.5,4,14);ctx.fillRect(sx+6,sy-47+w*.5,10,4)}
   else if(o.type==='chimney'){const b=SC.forge;const mid=(b.y0+b.y1+1)/2,half=(b.y1+1-b.y0)/2;const base=b.eave+(b.ridge-b.eave)*(1-Math.abs(o.y+.4-mid)/half);const[cx,cy]=iso(o.x+.4,o.y+.4);ctx.fillStyle='#5a4a3e';ctx.fillRect(cx-6,cy-base-26,12,26);ctx.fillStyle='#3a2e26';ctx.fillRect(cx-7,cy-base-28,14,4)}
-  else if(o.type==='gate'){const L=iso(o.x-.5,o.y+.5),R=iso(o.x+1.5,o.y+.5);const pil=(p)=>{ctx.fillStyle='#4a4652';ctx.fillRect(p[0]-12,p[1]-74,24,74);ctx.fillStyle='#5c5766';ctx.fillRect(p[0]-12,p[1]-74,12,74)};
+  else if(o.type==='gate'){ctx.save();ctx.translate(0,sy);ctx.scale(1,1.35);ctx.translate(0,-sy);const L=iso(o.x-.5,o.y+.5),R=iso(o.x+1.5,o.y+.5);const pil=(p)=>{ctx.fillStyle='#4a4652';ctx.fillRect(p[0]-12,p[1]-74,24,74);ctx.fillStyle='#5c5766';ctx.fillRect(p[0]-12,p[1]-74,12,74)};
     ctx.fillStyle='#120f18';poly([[L[0]+10,L[1]],[R[0]-10,R[1]],[R[0]-10,R[1]-62],[L[0]+10,L[1]-62]],'#120f18');
     const g=ctx.createLinearGradient(0,sy-60,0,sy);g.addColorStop(0,'rgba(140,110,200,.05)');g.addColorStop(1,'rgba(140,110,200,.35)');poly([[L[0]+10,L[1]],[R[0]-10,R[1]],[R[0]-10,R[1]-62],[L[0]+10,L[1]-62]],g);
     pil(L);pil(R);poly([[L[0]-16,L[1]-74],[R[0]+16,R[1]-74],[R[0]+16,R[1]-86],[L[0]-16,L[1]-86]],'#5c5766');
-    ctx.fillStyle='#d2ab52';ctx.font='11px "IM Fell English SC",serif';ctx.textAlign='center';ctx.fillText('ASHEN BARROW',sx,sy-76);ctx.textAlign='left'}
+    ctx.restore();ctx.fillStyle='#d2ab52';ctx.font='12px "IM Fell English SC",serif';ctx.textAlign='center';ctx.fillText('ASHEN BARROW',sx,sy-76*1.35-4);ctx.textAlign='left'}
   else if(o.type==='rubble'){for(let i=0;i<6;i++){const a=hash(i,3)*6.28,r=hash(i,7)*12;ellipse(sx+Math.cos(a)*r,sy-6-i*3+Math.sin(a)*r*.5,9-i,6-i*.6,shade('#4b4654',(hash(i,1)-.5)*.2))}}
   else if(o.type==='brazier'){ellipse(sx+2,sy,12,5,'rgba(0,0,0,.35)');ctx.strokeStyle='#2a2630';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(sx-7,sy);ctx.lineTo(sx-3,sy-22);ctx.moveTo(sx+7,sy);ctx.lineTo(sx+3,sy-22);ctx.stroke();ellipse(sx,sy-24,11,5,'#3a3540');const f=Math.sin(SC.t*14+o.x)*2;ctx.fillStyle='#e2602e';ctx.beginPath();ctx.ellipse(sx,sy-30,7,8+f,0,0,7);ctx.fill();ctx.fillStyle='#f6c35a';ctx.beginPath();ctx.ellipse(sx,sy-28,3.5,5+f*.5,0,0,7);ctx.fill()}
   else if(o.type==='ore'){const iron=o.metal==='iron';const base=iron?'#4a4d57':'#55504a';ellipse(sx+2,sy,16,7,'rgba(0,0,0,.35)');ctx.fillStyle=base;ctx.beginPath();ctx.moveTo(sx-15,sy-2);ctx.lineTo(sx-10,sy-18);ctx.lineTo(sx-1,sy-24);ctx.lineTo(sx+9,sy-19);ctx.lineTo(sx+15,sy-4);ctx.lineTo(sx+4,sy+3);ctx.closePath();ctx.fill();ctx.fillStyle=shade(base,.15);ctx.beginPath();ctx.moveTo(sx-10,sy-18);ctx.lineTo(sx-1,sy-24);ctx.lineTo(sx+2,sy-10);ctx.lineTo(sx-8,sy-6);ctx.closePath();ctx.fill();
@@ -191,10 +194,10 @@ function drawUnit(u){
   if(u.kind==='hero'&&u.down){drawLying(sx,sy,u.look,null);ctx.strokeStyle=u.ring;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(sx,sy,15,7.5,0,0,7);ctx.stroke();return}
   drawFigure(u,u.look,sx,sy,{ring:u.kind==='hero'?u.ring:null});
   if(u.carrying){const L=u.carrying.k.look;ctx.save();ctx.translate(sx,sy-Math.max(30,figTop(u)*.72));ctx.fillStyle=shade(L.body,-.1);ctx.beginPath();ctx.ellipse(0,0,13,4.5,0,0,7);ctx.fill();if(L.tabard){ctx.fillStyle=L.tabard;ctx.beginPath();ctx.ellipse(1,-1,6,2.5,0,0,7);ctx.fill()}ctx.fillStyle=L.head==='helm'?L.helm:(L.skin||'#d9ae8a');ctx.beginPath();ctx.arc(-13,1,4.5,0,7);ctx.fill();ctx.restore()}
-  if(u.kind==='enemy'&&u.hp<u.maxhp){bar(sx,sy-48,26,u.hp/u.maxhp,'#c0524a')}
+  if(u.kind==='enemy'&&u.hp<u.maxhp){bar(sx,sy-figTop(u)-8,26,u.hp/u.maxhp,'#c0524a')}
   if(u.kind==='hero'&&u.ai){bar(sx,sy-Math.max(50,figTop(u)+6),24,u.hp/u.maxhp,'#7fb069')}
-  if(u.kind==='enemy'&&u.stun>0){ctx.fillStyle='#9fd3ff';ctx.font='700 11px "Alegreya Sans",sans-serif';ctx.textAlign='center';ctx.fillText('* *',sx,sy-52);ctx.textAlign='left'}
-  if(u.sleep){ctx.fillStyle='rgba(200,200,190,.6)';ctx.font='600 11px "Alegreya Sans",sans-serif';ctx.fillText('z',sx+8,sy-42)}
+  if(u.kind==='enemy'&&u.stun>0){ctx.fillStyle='#9fd3ff';ctx.font='700 11px "Alegreya Sans",sans-serif';ctx.textAlign='center';ctx.fillText('* *',sx,sy-figTop(u)-12);ctx.textAlign='left'}
+  if(u.sleep){ctx.fillStyle='rgba(200,200,190,.6)';ctx.font='600 11px "Alegreya Sans",sans-serif';ctx.fillText('z',sx+10,sy-figTop(u)-2)}
 }
 function bar(x,y,w,f,col){ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(x-w/2-1,y-1,w+2,5);ctx.fillStyle=col;ctx.fillRect(x-w/2,y,w*Math.max(0,f),3)}
 

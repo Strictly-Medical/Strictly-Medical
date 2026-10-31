@@ -26,6 +26,7 @@ Plain HTML, CSS and JavaScript with no build step. Hosted on GitHub Pages from `
 - Grid coordinates are tiles. `iso(x,y)` maps to screen as `[(x-y)*32, (x+y)*16]`. Movement is 4-directional along the grid in real time.
 - Draw order: floors first, then a diagonal sweep where tile columns (walls, building tiles) and actors/objects are interleaved by `x+y`.
 - Every enemy and boss attack telegraphs the exact tiles it will hit before it lands.
+- World scale: characters are about 60px tall. `FIG`, `BS` and `PROP` in `js/core.js` scale code-drawn figures, buildings and village props up from their original sizes to match.
 - Sprites come from generated art. Tile art from ChatGPT is about 1.6:1, so tiles are squashed to 2:1 when packed into `assets/sprites/`.
 
 ## Design decisions so far

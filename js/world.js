@@ -34,7 +34,7 @@ function buildVillage(){
   land(7,12,8,13);land(9,12,13,12,'d');
   land(25,21,26,22);land(23,23,26,23,'d');land(23,22,23,22,'d');
   land(17,24,17,28,'d');
-  const bld=(x0,y0,x1,y1,wall,roof,eave,ridge,name)=>{const b={x0,y0,x1,y1,wall,roof,eave,ridge,name};for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){sc.COL[x][y]={b};sc.B[x][y]={type:'building'}}return b};
+  const bld=(x0,y0,x1,y1,wall,roof,eave,ridge,name)=>{const b={x0,y0,x1,y1,wall,roof,eave:eave*BS,ridge:ridge*BS,name};for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){sc.COL[x][y]={b};sc.B[x][y]={type:'building'}}return b};
   bld(15+o,5+o,18+o,8+o,'#d9cfb6','#7a2a24',50,84,'guild');
   sc.forge=bld(4+o,7+o,6+o,8+o,'#6b5a48','#3d4148',38,62,'forge');
   bld(4+o,13+o,6+o,14+o,'#c9bfa2','#3f5a3a',38,60,'apothecary');
