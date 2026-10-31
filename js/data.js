@@ -18,11 +18,11 @@ const RULES={
   grim:{name:'Grim',desc:'You lose your pack, and anyone you stabilized or were carrying dies.'},
 };
 const KNIGHTS=[
-  {id:'aldous',name:'Ser Aldous',title:'Knight of the Thorn',x:29,y:15,home:[17,10],look:{body:'#9aa3ad',tabard:'#4a2228',trim:'#9a8a6a',helm:'#9aa3ad',head:'helm',weapon:'sword'},
+  {id:'aldous',name:'Ser Aldous',title:'Knight of the Thorn',x:29,y:15,home:[22,16],look:{body:'#9aa3ad',tabard:'#4a2228',trim:'#9a8a6a',helm:'#9aa3ad',head:'helm',weapon:'sword'},
     line:'I held the Warden off long enough for Wren to run. She didn’t run. Neither did you, it seems.'},
-  {id:'wren',name:'Wren',title:'Squire',x:19,y:25,home:[16,17],scale:.86,look:{body:'#a58a66',tabard:'#4a2228',trim:'#9a8a6a',head:'hair',hair:'#c4703a',skin:'#e0b48c'},
+  {id:'wren',name:'Wren',title:'Squire',x:19,y:25,home:[19,22],scale:.86,look:{body:'#a58a66',tabard:'#4a2228',trim:'#9a8a6a',head:'hair',hair:'#c4703a',skin:'#e0b48c'},
     line:'I want to join the guild. Don’t tell my father yet.'},
-  {id:'hale',name:'Brother Hale',title:'Chaplain',x:15,y:11,home:[18,10],look:{body:'#6b5a48',robe:true,tabard:'#4a2228',trim:'#c9b98a',head:'hair',hair:'#5a5550',skin:'#d2a47c',beard:'#8a8580'},
+  {id:'hale',name:'Brother Hale',title:'Chaplain',x:15,y:11,home:[24,16],look:{body:'#6b5a48',robe:true,tabard:'#4a2228',trim:'#c9b98a',head:'hair',hair:'#5a5550',skin:'#d2a47c',beard:'#8a8580'},
     line:'I have buried a lot of knights. You are the first I have seen go in to bring them back.'},
 ];
 const ETYPES={

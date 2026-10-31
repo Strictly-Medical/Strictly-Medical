@@ -24,9 +24,19 @@ function drawFloor(x,y){
   else if((st==='s'||st==='b')&&v<.14){ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx-10,cy-2);ctx.lineTo(cx-2,cy+1);ctx.lineTo(cx+7,cy-3);ctx.stroke()}
   else if(st==='s'&&v>.93){ctx.fillStyle='rgba(214,207,186,.4)';ctx.fillRect(cx-6,cy,8,2);ctx.fillRect(cx+1,cy-3,2,5)}
 }
+function buildingHides(b,u){
+  const p=pos(u),[px,py]=iso(p.x,p.y),head=py-62;
+  const L=iso(b.x0,b.y1+1),F=iso(b.x1+1,b.y1+1),R=iso(b.x1+1,b.y0),T=iso(b.x0,b.y0);
+  if(px<L[0]+6||px>R[0]-6)return false;
+  const lerp=(a,c,X)=>a[1]+(c[1]-a[1])*(X-a[0])/(c[0]-a[0]);
+  const front=px<F[0]?lerp(L,F,px):lerp(F,R,px),back=px<T[0]?lerp(L,T,px):lerp(T,R,px);
+  return py<front&&head<back-b.eave*.4+6&&py>back-b.ridge-4;
+}
 function cutFor(x,y){
   if(SC.kind!=='dungeon'&&SC.kind!=='village')return false;
   const list=SC.kind==='dungeon'?heroes():[SC.player];
+  // Village buildings are tall: a whole building fades when it is actually drawn over the player.
+  if(SC.kind==='village'){const c=SC.COL[x][y];if(c&&c.b){const b=c.b;if(b._cutT!==SC.t){b._cutT=SC.t;b._cut=buildingHides(b,SC.player)}return b._cut}}
   for(const h of list){const hs=h.tx+h.ty,hd=h.tx-h.ty,s=x+y,dd=x-y;if(s>hs&&s-hs<=4&&Math.abs(dd-hd)<=(SC.kind==='dungeon'?3:2))return true}
   return false;
 }
@@ -51,10 +61,18 @@ function drawBuildingTile(x,y,b,alpha){
   const[A,B,C,D]=quad(x,y);const hA=hf(y),hB=hf(y),hC=hf(y+1),hD=hf(y+1),we=b.eave-6;
   ctx.globalAlpha=alpha;
   if(y===b.y1){poly([D,C,[C[0],C[1]-we],[D[0],D[1]-we]],shade(b.wall,-.28));
-    if(x===Math.floor((b.x0+b.x1)/2)){const d1=[D[0]+(C[0]-D[0])*.3,D[1]+(C[1]-D[1])*.3],d2=[D[0]+(C[0]-D[0])*.7,D[1]+(C[1]-D[1])*.7];poly([d1,d2,[d2[0],d2[1]-24*BS],[d1[0],d1[1]-24*BS]],'#3a2a1e');ctx.fillStyle='rgba(240,180,90,.5)';ctx.fillRect((d1[0]+d2[0])/2-1,(d1[1]+d2[1])/2-14*BS,2,2)}
-    else{const w1=[D[0]+(C[0]-D[0])*.35,D[1]+(C[1]-D[1])*.35],w2=[D[0]+(C[0]-D[0])*.65,D[1]+(C[1]-D[1])*.65];poly([[w1[0],w1[1]-16*BS],[w2[0],w2[1]-16*BS],[w2[0],w2[1]-26*BS],[w1[0],w1[1]-26*BS]],'#f0c070')}}
+    if(b.door&&x===b.door.x){
+      // A door tall enough to walk through: stone step, dark frame, plank door, lit gap and handle.
+      const at=t=>[D[0]+(C[0]-D[0])*t,D[1]+(C[1]-D[1])*t],DH=74;const f1=at(.18),f2=at(.82),d1=at(.25),d2=at(.75);
+      poly([[f1[0]-2,f1[1]+1],[f2[0]+2,f2[1]+1],[f2[0]+5,f2[1]+5],[f1[0]+1,f1[1]+5]],'#77716a');
+      poly([f1,f2,[f2[0],f2[1]-DH-7],[f1[0],f1[1]-DH-7]],shade(b.wall,-.55));
+      poly([d1,d2,[d2[0],d2[1]-DH],[d1[0],d1[1]-DH]],'#4a3424');
+      ctx.strokeStyle='rgba(0,0,0,.35)';ctx.lineWidth=1;for(const t of[.42,.58]){const p=at(t);ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(p[0],p[1]-DH);ctx.stroke()}
+      const m=at(.66);ctx.fillStyle='#d2ab52';ctx.fillRect(m[0]-1,m[1]-DH*.48,2.5,2.5);
+      ctx.fillStyle='rgba(240,180,90,.35)';const g=at(.5);ctx.fillRect(g[0]-.5,g[1]-DH,1,DH)}
+    else{const w1=[D[0]+(C[0]-D[0])*.35,D[1]+(C[1]-D[1])*.35],w2=[D[0]+(C[0]-D[0])*.65,D[1]+(C[1]-D[1])*.65];poly([[w1[0],w1[1]-34],[w2[0],w2[1]-34],[w2[0],w2[1]-62],[w1[0],w1[1]-62]],'#f0c070');poly([[w1[0]-1,w1[1]-33],[w2[0]+1,w2[1]-33],[w2[0]+1,w2[1]-31],[w1[0]-1,w1[1]-31]],shade(b.wall,-.45))}}
   if(x===b.x1){poly([B,C,[C[0],C[1]-hC+4],[B[0],B[1]-hB+4]],shade(b.wall,-.12));
-    const m1=[B[0]+(C[0]-B[0])*.35,B[1]+(C[1]-B[1])*.35],m2=[B[0]+(C[0]-B[0])*.65,B[1]+(C[1]-B[1])*.65];poly([[m1[0],m1[1]-16*BS],[m2[0],m2[1]-16*BS],[m2[0],m2[1]-26*BS],[m1[0],m1[1]-26*BS]],'#e8b860')}
+    const m1=[B[0]+(C[0]-B[0])*.35,B[1]+(C[1]-B[1])*.35],m2=[B[0]+(C[0]-B[0])*.65,B[1]+(C[1]-B[1])*.65];poly([[m1[0],m1[1]-34],[m2[0],m2[1]-34],[m2[0],m2[1]-62],[m1[0],m1[1]-62]],'#e8b860');poly([[m1[0]-1,m1[1]-33],[m2[0]+1,m2[1]-33],[m2[0]+1,m2[1]-31],[m1[0]-1,m1[1]-31]],shade(b.wall,-.3))}
   const back=(y+.5)<mid;
   poly([[A[0],A[1]-hA],[B[0],B[1]-hB],[C[0],C[1]-hC],[D[0],D[1]-hD]],shade(b.roof,back?.1:-.15),'rgba(0,0,0,.25)',1);
   ctx.globalAlpha=1;
@@ -160,7 +178,7 @@ function drawObj(o){
   const vk=n=>SC.kind==='village'?PROP[n]:1;
   if(o.type==='tree'&&drawArt('tree',sx,sy,hash(o.x,o.y)<.5,vk('tree')))return;
   if(o.type==='well'&&drawArt('well',sx,sy,false,vk('well')))return;
-  if(o.type==='banner'&&drawArt('banner',sx,sy,o.x>16+VO,vk('banner')))return;
+  if(o.type==='banner'&&drawArt('banner',sx,sy,o.x>22,vk('banner')))return;
   if(o.type==='rubble'&&drawArt('stub',sx,sy))return;
   if(o.type==='brazier'&&drawArt('brazier',sx,sy))return;
   if(o.type==='chest'&&drawArt(o.open?'chestOpen':'chest',sx,sy))return;

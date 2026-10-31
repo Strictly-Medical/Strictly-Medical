@@ -8,7 +8,7 @@ Plain HTML, CSS and JavaScript with no build step. Hosted on GitHub Pages from `
 - `js/sprites.js`: size and anchor (`w`, `h`, `ax`, `ay`, in game pixels) for each image in `assets/sprites/`.
 - `js/core.js`: canvas setup, sprite loading (`art()`, `drawArt()`), math helpers.
 - `js/data.js`: classes, failure rules, wounded knights, enemy types, and `S`, the saved game state.
-- `js/world.js`: scene object `SC`, village and dungeon layouts, party creation, grid movement, BFS pathfinding. The village is a 34x34 island; `VO` is the offset applied to the original 22x22 village layout, and `SC.gate` marks the Barrow gate.
+- `js/world.js`: scene object `SC`, village and dungeon layouts, party creation, grid movement, BFS pathfinding. The village is a 34x34 island. Buildings are listed in `SC.buildings`; each has `door`, the tile just outside its front (south-west) door, ready for enterable interiors later. `SC.gate` marks the Barrow gate. A building fades as a whole when it is drawn over the player (`buildingHides` in render.js).
 - `js/input.js`: keyboard, mouse and touch. On touch screens, movement is either the isometric D-pad (a plus-shaped pad rotated 45° so each arm is a grid direction; the default) or the left-half joystick, set in Options (`OPTS.pad`). Action buttons sit in a thumb arc around Strike.
 - `js/combat.js`: damage, attacks, projectiles, telegraphed attack tiles, medic actions (stabilize, carry, deliver).
 - `js/actors.js`: player control, companion AI, enemies, the Lantern Warden.

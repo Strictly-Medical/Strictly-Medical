@@ -24,42 +24,45 @@ function mkUnit(o){const u=Object.assign({id:++UID,tx:0,ty:0,prog:1,dur:.13,face
 // with the road running north to the Barrow gate and cottages, woods and an orchard around the edges.
 const VO=6;
 function buildVillage(){
-  const N=34,C=N/2,sc=SC=newScene('village',N,N);
+  const N=34,C=N/2,sc=SC=newScene('village',N,N);sc.buildings=[];
   for(let x=0;x<N;x++)for(let y=0;y<N;y++){const dx=x+.5-C,dy=y+.5-C,a=Math.atan2(dy,dx),r=Math.hypot(dx,dy);if(r<13.6+Math.sin(a*3+1)*1.1+Math.cos(a*5)*.5+(hash(x,y)-.5)*.6)sc.T[x][y]=1}
   const land=(x0,y0,x1,y1,st)=>{for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){sc.T[x][y]=1;if(st)sc.ST[x][y]=st}};
   const o=VO;
-  land(15,0,19,2);land(17,2,17,8+o,'c');land(8+o,9+o,14+o,13+o,'c');land(15+o,5+o,18+o,8+o);land(15+o,9+o,18+o,10+o,'c');
-  land(4+o,7+o,6+o,8+o);land(7+o,7+o,8+o,11+o,'d');land(4+o,13+o,6+o,14+o);land(7+o,12+o,7+o,15+o,'c');land(14+o,15+o,16+o,16+o);land(12+o,14+o,13+o,17+o,'c');land(13+o,17+o,16+o,17+o,'c');
-  // Outskirts: a west lane to a cottage, an east lane to another, and a footpath into the south orchard.
-  land(7,12,8,13);land(9,12,13,12,'d');
-  land(25,21,26,22);land(23,23,26,23,'d');land(23,22,23,22,'d');
-  land(17,24,17,28,'d');
-  const bld=(x0,y0,x1,y1,wall,roof,eave,ridge,name)=>{const b={x0,y0,x1,y1,wall,roof,eave:eave*BS,ridge:ridge*BS,name};for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){sc.COL[x][y]={b};sc.B[x][y]={type:'building'}}return b};
-  bld(15+o,5+o,18+o,8+o,'#d9cfb6','#7a2a24',50,84,'guild');
-  sc.forge=bld(4+o,7+o,6+o,8+o,'#6b5a48','#3d4148',38,62,'forge');
-  bld(4+o,13+o,6+o,14+o,'#c9bfa2','#3f5a3a',38,60,'apothecary');
-  bld(14+o,15+o,16+o,16+o,'#a58a66','#6a4a2e',38,60,'mill');
-  bld(7,12,8,13,'#b8a98a','#4a3a5a',34,54,'cottage');
-  bld(25,21,26,22,'#c2b394','#5a3a2a',34,54,'cottage');
+  land(15,0,19,2);land(17,2,17,8+o,'c');land(8+o,9+o,14+o,13+o,'c');
+  // Guild apron, forge yard, apothecary lane, mill lane.
+  land(20,15,25,16,'c');land(13,13,14,17,'d');land(7,15,12,15,'d');land(13,18,13,21,'c');land(18,20,19,25,'c');land(19,25,26,25,'c');
+  // Outskirts: lanes to the two cottages, and a footpath into the south orchard.
+  land(6,14,6,14,'d');land(26,19,26,24,'d');land(17,25,17,28,'d');
+  // Buildings. Each door is on the front (south-west) wall, centred, and b.door is the tile just outside it.
+  const bld=(x0,y0,x1,y1,wall,roof,eave,ridge,name)=>{land(x0,y0,x1,y1);const b={x0,y0,x1,y1,wall,roof,eave,ridge,name,door:{x:Math.floor((x0+x1)/2),y:y1+1}};
+    for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){sc.COL[x][y]={b};sc.B[x][y]={type:'building'}}sc.buildings.push(b);return b};
+  sc.buildings=[];
+  bld(20,9,25,14,'#d9cfb6','#7a2a24',118,196,'guild');
+  sc.forge=bld(8,11,12,14,'#6b5a48','#3d4148',96,150,'forge');
+  bld(8,18,12,20,'#c9bfa2','#3f5a3a',96,148,'apothecary');
+  bld(22,20,25,23,'#a58a66','#6a4a2e',96,150,'mill');
+  bld(5,11,7,13,'#b8a98a','#4a3a5a',90,138,'cottage');
+  bld(26,15,28,17,'#c2b394','#5a3a2a',90,138,'cottage');
   sc.gate={x:17,y:1};
   placeObj({type:'gate',x:17,y:1,block:true,kOff:-.1});sc.B[16][1]={type:'gate'};sc.B[18][1]={type:'gate'};
   placeObj({type:'well',x:11+o,y:11+o,block:true});
-  placeObj({type:'anvil',x:8+o,y:8+o,block:true});
-  placeObj({type:'banner',x:15+o,y:9+o,block:true});placeObj({type:'banner',x:18+o,y:9+o,block:true});
-  for(const[x,y]of[[8+o,13+o],[14+o,13+o],[16,3],[18,3]])placeObj({type:'brazier',x,y,block:true});
-  placeObj({type:'chimney',x:4+o,y:7+o});
+  placeObj({type:'anvil',x:14,y:14,block:true});
+  placeObj({type:'banner',x:20,y:15,block:true});placeObj({type:'banner',x:25,y:15,block:true});
+  for(const[x,y]of[[14,19],[20,19],[16,3],[18,3]])placeObj({type:'brazier',x,y,block:true});
+  placeObj({type:'chimney',x:8,y:11});
   const npc=(id,name,role,x,y,look,face,talk,scale)=>mkUnit({kind:'npc',team:2,id,name,role,tx:x,ty:y,look,face,talk,scale});
-  npc('maren','Captain Maren','The Ninety and Nine',16+o,9+o,{body:'#b9b2a2',tabard:'#e8dfca',trim:'#b3362e',head:'hair',hair:'#8d8d8d',skin:'#d9ae8a',cape:'#7a2a24'},{x:0,y:1},talkCaptain);
-  npc('odo','Odo','Smith',7+o,8+o,{body:'#5a4030',tabard:'#7a5a3a',trim:'#3a2a1e',head:'hair',hair:'#2a2420',skin:'#c48e6a',beard:'#2a2420',weapon:'hammer'},{x:1,y:0},talkOdo);
-  npc('ilse','Sister Ilse','Apothecary',7+o,14+o,{body:'#4f6a4a',robe:true,tabard:'#e8dfca',trim:'#b3362e',head:'veil',helm:'#e8dfca',skin:'#e0b48c'},{x:1,y:0},talkIlse);
-  npc('tobin','Tobin','Miller',15+o,17+o,{body:'#8a7356',tabard:'#c9b48a',trim:'#6a5a40',head:'hair',hair:'#6a4a2e',skin:'#d9ae8a',beard:'#6a4a2e'},{x:0,y:1},talkTobin);
-  for(const k of KNIGHTS)if(S.roster[k.id]==='saved')npc(k.id,k.name,k.title,k.home[0]+o,k.home[1]+o,k.look,{x:0,y:1},()=>talkSaved(k),k.scale);
+  npc('maren','Captain Maren','The Ninety and Nine',23,15,{body:'#b9b2a2',tabard:'#e8dfca',trim:'#b3362e',head:'hair',hair:'#8d8d8d',skin:'#d9ae8a',cape:'#7a2a24'},{x:0,y:1},talkCaptain);
+  npc('odo','Odo','Smith',13,14,{body:'#5a4030',tabard:'#7a5a3a',trim:'#3a2a1e',head:'hair',hair:'#2a2420',skin:'#c48e6a',beard:'#2a2420',weapon:'hammer'},{x:1,y:0},talkOdo);
+  npc('ilse','Sister Ilse','Apothecary',13,20,{body:'#4f6a4a',robe:true,tabard:'#e8dfca',trim:'#b3362e',head:'veil',helm:'#e8dfca',skin:'#e0b48c'},{x:1,y:0},talkIlse);
+  npc('tobin','Tobin','Miller',24,25,{body:'#8a7356',tabard:'#c9b48a',trim:'#6a5a40',head:'hair',hair:'#6a4a2e',skin:'#d9ae8a',beard:'#6a4a2e'},{x:0,y:1},talkTobin);
+  for(const k of KNIGHTS)if(S.roster[k.id]==='saved')npc(k.id,k.name,k.title,k.home[0],k.home[1],k.look,{x:0,y:1},()=>talkSaved(k),k.scale);
   // Trees: the original village trees, an orchard in rows to the south, then scattered woods on the outer ring.
   const trees=[[3,5],[5,4],[7,3],[14,3],[16,3],[19,6],[19,12],[18,13],[9,18],[11,19],[17,19],[3,11],[2,9],[3,16],[6,18],[19,16],[13,6],[8,5],[4,11],[20,10],[1,12],[12,20],[9,15],[17,13]].map(([x,y])=>[x+o,y+o]);
-  for(let x=13;x<=21;x+=2)for(let y=26;y<=29;y+=2)if(x!==17)trees.push([x,y]);
-  const keep=(x,y)=>{for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){const nx=x+dx,ny=y+dy;if(inB(nx,ny)&&(sc.ST[nx][ny]!=='g'||sc.COL[nx][ny]||sc.B[nx][ny]))return true}return false};
+  for(let x=13;x<=21;x+=2)for(let y=27;y<=29;y+=2)if(x!==17)trees.push([x,y]);
+  const doors=new Set(sc.buildings.flatMap(b=>[key(b.door.x,b.door.y),key(b.door.x,b.door.y+1),key(b.door.x-1,b.door.y),key(b.door.x+1,b.door.y)]));
+  const keep=(x,y)=>{if(doors.has(key(x,y)))return true;for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){const nx=x+dx,ny=y+dy;if(inB(nx,ny)&&(sc.ST[nx][ny]!=='g'||sc.COL[nx][ny]||sc.B[nx][ny]))return true}return false};
   for(let x=0;x<N;x++)for(let y=0;y<N;y++){const r=Math.hypot(x+.5-C,y+.5-C);if(r>9.5&&floorAt(x,y)&&floorAt(x+1,y)&&floorAt(x,y+1)&&hash(x*3+1,y*7+2)<.2&&!keep(x,y))trees.push([x,y])}
-  for(const[x,y]of trees)if(floorAt(x,y)&&sc.ST[x][y]==='g'&&!sc.B[x][y]&&!unitAt(x,y))placeObj({type:'tree',x,y,block:true});
+  for(const[x,y]of trees)if(floorAt(x,y)&&sc.ST[x][y]==='g'&&!sc.B[x][y]&&!unitAt(x,y)&&!doors.has(key(x,y)))placeObj({type:'tree',x,y,block:true});
   return sc;
 }
 
