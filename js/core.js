@@ -10,7 +10,7 @@ window.addEventListener('resize',resize);resize();
 const ART={};if(typeof Image!=='undefined')for(const[k,v]of Object.entries(SPRITES)){const im=new Image();im.src='assets/sprites/'+k+'.png';ART[k]=Object.assign({im},v)}
 const art=n=>{const a=ART[n];return a&&a.im.complete&&a.im.naturalWidth?a:null};
 // Animated character sheets: frames side by side, stored at 3x game size. w/h/ax/ay are in game pixels.
-const CHARS={knight:{src:'knight-walk',frames:4,w:38,h:58,ax:24,ay:57,walk:[0,1,2,3],idle:3}};
+const CHARS={knight:{src:'knight-walk',frames:5,w:38.67,h:61,ax:24.3,ay:60.6,walk:[0,1,2,3],idle:4}};
 if(typeof Image!=='undefined')for(const c of Object.values(CHARS)){const im=new Image();im.onload=()=>{const fw=im.naturalWidth/c.frames,fh=im.naturalHeight;c.fw=fw;c.fh=fh;
   const wc=document.createElement('canvas');wc.width=im.naturalWidth;wc.height=fh;const x=wc.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-atop';x.fillStyle='#fff';x.fillRect(0,0,wc.width,fh);c.white=wc;c.ok=true};im.src='assets/sprites/'+c.src+'.png';c.im=im}
 function drawArt(n,sx,sy,flip){const a=art(n);if(!a)return false;if(flip){ctx.save();ctx.translate(sx,sy);ctx.scale(-1,1);ctx.drawImage(a.im,-a.ax,-a.ay,a.w,a.h);ctx.restore()}else ctx.drawImage(a.im,sx-a.ax,sy-a.ay,a.w,a.h);return true}
