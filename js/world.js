@@ -29,32 +29,34 @@ function buildVillage(){
   const land=(x0,y0,x1,y1,st)=>{for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){sc.T[x][y]=1;if(st)sc.ST[x][y]=st}};
   const o=VO;
   land(15,0,19,2);land(17,2,17,8+o,'c');land(8+o,9+o,14+o,13+o,'c');
-  // Guild apron, forge yard, apothecary lane, mill lane.
-  land(20,15,25,16,'c');land(13,13,14,17,'d');land(7,15,12,15,'d');land(13,18,13,21,'c');land(18,20,19,25,'c');land(19,25,26,25,'c');
-  // Outskirts: lanes to the two cottages, and a footpath into the south orchard.
-  land(6,14,6,14,'d');land(26,19,26,24,'d');land(17,25,17,28,'d');
-  // Buildings. Each door is on the front (south-west) wall, centred, and b.door is the tile just outside it.
-  const bld=(x0,y0,x1,y1,wall,roof,eave,ridge,name)=>{land(x0,y0,x1,y1);const b={x0,y0,x1,y1,wall,roof,eave,ridge,name,door:{x:Math.floor((x0+x1)/2),y:y1+1}};
-    for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){sc.COL[x][y]={b};sc.B[x][y]={type:'building'}}sc.buildings.push(b);return b};
-  sc.buildings=[];
-  bld(20,9,25,14,'#d9cfb6','#7a2a24',118,196,'guild');
-  sc.forge=bld(8,11,12,14,'#6b5a48','#3d4148',96,150,'forge');
-  bld(8,18,12,20,'#c9bfa2','#3f5a3a',96,148,'apothecary');
-  bld(22,20,25,23,'#a58a66','#6a4a2e',96,150,'mill');
-  bld(5,11,7,13,'#b8a98a','#4a3a5a',90,138,'cottage');
-  bld(26,15,28,17,'#c2b394','#5a3a2a',90,138,'cottage');
+  // Buildings use painted sprites (BLD in core.js); spr picks the art and its footprint sets the size.
+  // Each door is centred on the front-left (south-west) wall, and b.door is the tile just outside it.
+  const bld=(spr,x0,y0,name)=>{const[a,bb]=BLD[spr].foot,x1=x0+a-1,y1=y0+bb-1;land(x0,y0,x1,y1);
+    const b={x0,y0,x1,y1,spr,name,eave:120,ridge:BLD[spr].h,door:{x:Math.floor((x0+x1)/2),y:y1+1}};
+    for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){sc.COL[x][y]={b};sc.B[x][y]={type:'building'}}sc.buildings.push(b);
+    const sm=BLD[spr].smoke;if(sm){const[cx,cy]=iso((x0+x1+1)/2,(y0+y1+1)/2),X=cx+sm[0]-BLD[spr].cx,Y=cy+sm[1]-BLD[spr].cy,z=140,g=Y+z;
+      sc.objs.push({type:'smoke',x:(g/16+X/32)/2,y:(g/16-X/32)/2,z})}
+    return b};
+  const guild=bld('guild',20,11,'guild');
+  sc.forge=bld('forge',9,10,'forge');
+  const apo=bld('apothecary',8,17,'apothecary');
+  const mill=bld('mill',21,20,'mill');
+  bld('cottage',5,9,'cottage');
+  bld('cottage',26,15,'cottage');
+  // Paths: guild apron, forge yard, lanes to every door, and a footpath into the south orchard.
+  const path=(x0,y0,x1,y1,st)=>{for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)if(!sc.COL[x][y]){sc.T[x][y]=1;sc.ST[x][y]=st}};
+  path(20,15,25,16,'c');path(13,14,14,17,'d');path(7,15,12,16,'d');path(13,18,13,21,'c');path(10,21,13,22,'c');
+  path(18,20,19,25,'c');path(19,24,26,25,'c');path(6,13,6,15,'d');path(26,19,27,23,'d');path(17,25,17,28,'d');
   sc.gate={x:17,y:1};
   placeObj({type:'gate',x:17,y:1,block:true,kOff:-.1});sc.B[16][1]={type:'gate'};sc.B[18][1]={type:'gate'};
   placeObj({type:'well',x:11+o,y:11+o,block:true});
   placeObj({type:'anvil',x:14,y:14,block:true});
-  placeObj({type:'banner',x:20,y:15,block:true});placeObj({type:'banner',x:25,y:15,block:true});
   for(const[x,y]of[[14,19],[20,19],[16,3],[18,3]])placeObj({type:'brazier',x,y,block:true});
-  placeObj({type:'chimney',x:8,y:11});
   const npc=(id,name,role,x,y,look,face,talk,scale)=>mkUnit({kind:'npc',team:2,id,name,role,tx:x,ty:y,look,face,talk,scale});
-  npc('maren','Captain Maren','The Ninety and Nine',23,15,{body:'#b9b2a2',tabard:'#e8dfca',trim:'#b3362e',head:'hair',hair:'#8d8d8d',skin:'#d9ae8a',cape:'#7a2a24'},{x:0,y:1},talkCaptain);
+  npc('maren','Captain Maren','The Ninety and Nine',24,15,{body:'#b9b2a2',tabard:'#e8dfca',trim:'#b3362e',head:'hair',hair:'#8d8d8d',skin:'#d9ae8a',cape:'#7a2a24'},{x:0,y:1},talkCaptain);
   npc('odo','Odo','Smith',13,14,{body:'#5a4030',tabard:'#7a5a3a',trim:'#3a2a1e',head:'hair',hair:'#2a2420',skin:'#c48e6a',beard:'#2a2420',weapon:'hammer'},{x:1,y:0},talkOdo);
-  npc('ilse','Sister Ilse','Apothecary',13,20,{body:'#4f6a4a',robe:true,tabard:'#e8dfca',trim:'#b3362e',head:'veil',helm:'#e8dfca',skin:'#e0b48c'},{x:1,y:0},talkIlse);
-  npc('tobin','Tobin','Miller',24,25,{body:'#8a7356',tabard:'#c9b48a',trim:'#6a5a40',head:'hair',hair:'#6a4a2e',skin:'#d9ae8a',beard:'#6a4a2e'},{x:0,y:1},talkTobin);
+  npc('ilse','Sister Ilse','Apothecary',12,21,{body:'#4f6a4a',robe:true,tabard:'#e8dfca',trim:'#b3362e',head:'veil',helm:'#e8dfca',skin:'#e0b48c'},{x:1,y:0},talkIlse);
+  npc('tobin','Tobin','Miller',25,24,{body:'#8a7356',tabard:'#c9b48a',trim:'#6a5a40',head:'hair',hair:'#6a4a2e',skin:'#d9ae8a',beard:'#6a4a2e'},{x:0,y:1},talkTobin);
   for(const k of KNIGHTS)if(S.roster[k.id]==='saved')npc(k.id,k.name,k.title,k.home[0],k.home[1],k.look,{x:0,y:1},()=>talkSaved(k),k.scale);
   // Trees: the original village trees, an orchard in rows to the south, then scattered woods on the outer ring.
   const trees=[[3,5],[5,4],[7,3],[14,3],[16,3],[19,6],[19,12],[18,13],[9,18],[11,19],[17,19],[3,11],[2,9],[3,16],[6,18],[19,16],[13,6],[8,5],[4,11],[20,10],[1,12],[12,20],[9,15],[17,13]].map(([x,y])=>[x+o,y+o]);

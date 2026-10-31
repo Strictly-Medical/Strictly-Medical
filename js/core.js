@@ -13,6 +13,14 @@ const art=n=>{const a=ART[n];return a&&a.im.complete&&a.im.naturalWidth?a:null};
 const CHARS={knight:{src:'knight-walk',frames:5,w:38.67,h:61,ax:24.3,ay:60.6,walk:[0,1,2,3],idle:4}};
 if(typeof Image!=='undefined')for(const c of Object.values(CHARS)){const im=new Image();im.onload=()=>{const fw=im.naturalWidth/c.frames,fh=im.naturalHeight;c.fw=fw;c.fh=fh;
   const wc=document.createElement('canvas');wc.width=im.naturalWidth;wc.height=fh;const x=wc.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-atop';x.fillStyle='#fff';x.fillRect(0,0,wc.width,fh);c.white=wc;c.ok=true};im.src='assets/sprites/'+c.src+'.png';c.im=im}
+// Village building sprites (assets/sprites/bld-*.png, stored at 2x). In game px: w,h size; cx,cy the centre of the base
+// diamond; fx the x of the front corner, where the sprite is split into left and right halves; smoke a chimney top.
+// foot is the footprint in tiles: [along the front-left (door) wall, along the front-right wall]. Built by art/buildings/pack.py.
+const BLD={"guild":{"foot":[6,4],"w":321.61,"h":283.02,"cx":160.54,"cy":201.94,"fx":201.54,"smoke":[247.1,15.54]},"forge":{"foot":[4,5],"w":289.54,"h":250.97,"cx":144.51,"cy":177.94,"fx":136.29,"smoke":[206.74,3.6]},"apothecary":{"foot":[5,4],"w":289.8,"h":270.64,"cx":144.6,"cy":197.44,"fx":158.67,"smoke":[211.96,4.19]},"mill":{"foot":[5,4],"w":289.68,"h":260.54,"cx":144.56,"cy":187.42,"fx":156.33},"cottage":{"foot":[3,4],"w":228.65,"h":213.68,"cx":115.61,"cy":156.65,"fx":122.84,"smoke":[173.42,3.61]}};
+// On load, record the top painted pixel of each game-pixel column, so fading can test what actually covers the player.
+if(typeof Image!=='undefined')for(const[k,v]of Object.entries(BLD)){const im=new Image();im.onload=()=>{try{const c=document.createElement('canvas'),W2=Math.ceil(v.w),H2=Math.ceil(v.h);c.width=W2;c.height=H2;const x=c.getContext('2d');x.drawImage(im,0,0,W2,H2);
+  const d=x.getImageData(0,0,W2,H2).data,t=new Float32Array(W2).fill(1e9);for(let cx=0;cx<W2;cx++)for(let cy=0;cy<H2;cy++)if(d[(cy*W2+cx)*4+3]>128){t[cx]=cy;break}v.tops=t}catch(e){}};im.src='assets/sprites/bld-'+k+'.png';v.im=im}
+const bldArt=n=>{const v=BLD[n];return v&&v.im.complete&&v.im.naturalWidth?v:null};
 // World scale. Characters are about 60px tall, so village props, buildings and code-drawn figures are scaled up from their original sizes.
 const FIG=1.24,BS=1.45,PROP={tree:1.5,well:1.35,banner:1.4};
 function drawArt(n,sx,sy,flip,k=1){const a=art(n);if(!a)return false;ctx.save();ctx.translate(sx,sy);ctx.scale(flip?-k:k,k);ctx.drawImage(a.im,-a.ax,-a.ay,a.w,a.h);ctx.restore();return true}

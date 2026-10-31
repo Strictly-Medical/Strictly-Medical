@@ -29,6 +29,7 @@ function step(dt){
 function ambient(dt){
   for(const o of SC.objs){
     if(o.type==='brazier'&&Math.random()<dt*10)SC.parts.push({x:o.x+.5+rnd(-.12,.12),y:o.y+.5+rnd(-.12,.12),z:art('brazier')?50:30,vx:0,vy:0,vz:rnd(25,55),t:rnd(.4,.8),col:Math.random()<.5?'#f0a040':'#e2602e',size:rnd(2,3),noG:true});
+    if(o.type==='smoke'&&Math.random()<dt*4)SC.parts.push({x:o.x+rnd(-.05,.05),y:o.y+rnd(-.05,.05),z:o.z,vx:rnd(.05,.25),vy:rnd(-.2,0),vz:rnd(14,24),t:rnd(1.6,2.6),col:'rgba(160,150,150,.35)',size:rnd(4,7),noG:true});
     if(o.type==='chimney'&&Math.random()<dt*4)SC.parts.push({x:o.x+.4,y:o.y+.4,z:92,vx:rnd(.05,.25),vy:rnd(-.2,0),vz:rnd(14,24),t:rnd(1.6,2.6),col:'rgba(160,150,150,.35)',size:rnd(4,7),noG:true});
     if(o.type==='exit'&&Math.random()<dt*8)SC.parts.push({x:o.x+.5+rnd(-.35,.35),y:o.y+.5+rnd(-.35,.35),z:0,vx:0,vy:0,vz:rnd(30,70),t:rnd(.6,1.2),col:'#f6dc8a',size:rnd(1.5,3),noG:true});
   }

@@ -30,6 +30,7 @@ function buildingHides(b,u){
   if(px<L[0]+6||px>R[0]-6)return false;
   const lerp=(a,c,X)=>a[1]+(c[1]-a[1])*(X-a[0])/(c[0]-a[0]);
   const front=px<F[0]?lerp(L,F,px):lerp(F,R,px),back=px<T[0]?lerp(L,T,px):lerp(T,R,px);
+  if(b.spr&&BLD[b.spr]){const{v,x:sx,y:sy}=bldPlace(b);if(!v.tops)return false;let cover=0;for(const dx of[-8,0,8]){const c=Math.round(px+dx-sx);if(c>=0&&c<v.tops.length&&sy+v.tops[c]<py-14)cover++}return py<front&&cover>=2}
   return py<front&&head<back-b.eave*.4+6&&py>back-b.ridge-4;
 }
 function cutFor(x,y){
@@ -55,6 +56,16 @@ function drawWall(x,y,cut){
   if(r<h)brickFace(B,C,r,h,'#26252a','#575350',x*5+y*11);
   poly([[A[0],A[1]-h],[B[0],B[1]-h],[C[0],C[1]-h],[D[0],D[1]-h]],shade('#5d5953',(v-.5)*.12),'rgba(0,0,0,.45)',1);
   if(!cut&&v<.35){ctx.fillStyle='rgba(90,110,60,.35)';ctx.fillRect((A[0]+C[0])/2-6+v*10,(A[1]+C[1])/2-h-2,8,3)}
+}
+// Sprite buildings are split at their front corner. The left half (door wall) is drawn at the left-front tile and the
+// right half at the right-back tile, so anything standing in front of either wall is drawn after it.
+function bldPlace(b){const v=BLD[b.spr],[cx,cy]=iso((b.x0+b.x1+1)/2,(b.y0+b.y1+1)/2);return{v,x:cx-v.cx,y:cy-v.cy}}
+function drawBuildingHalf(b,right,alpha){
+  const{v,x,y}=bldPlace(b),k=v.im.naturalWidth/v.w,split=v.fx;
+  ctx.globalAlpha=alpha;
+  if(!right)ctx.drawImage(v.im,0,0,split*k,v.im.naturalHeight,x,y,split,v.h);
+  else ctx.drawImage(v.im,split*k,0,(v.w-split)*k,v.im.naturalHeight,x+split,y,v.w-split,v.h);
+  ctx.globalAlpha=1;
 }
 function drawBuildingTile(x,y,b,alpha){
   const mid=(b.y0+b.y1+1)/2,half=(b.y1+1-b.y0)/2;const hf=cy=>b.eave+(b.ridge-b.eave)*(1-Math.abs(cy-mid)/half);
@@ -227,7 +238,7 @@ function render(){
   const shx=SC.shake>0?(Math.random()-.5)*SC.shake:0,shy=SC.shake>0?(Math.random()-.5)*SC.shake:0;
   const ox=W/2-SC.cam.x*Z+shx,oy=H/2-SC.cam.y*Z+shy;
   ctx.setTransform(DPR*Z,0,0,DPR*Z,DPR*ox,DPR*oy);
-  for(let s=0;s<=SC.W+SC.H-2;s++)for(let x=Math.max(0,s-SC.H+1);x<=Math.min(SC.W-1,s);x++){const y=s-x;if(SC.T[x][y]===1&&!SC.COL[x][y])drawFloor(x,y)}
+  for(let s=0;s<=SC.W+SC.H-2;s++)for(let x=Math.max(0,s-SC.H+1);x<=Math.min(SC.W-1,s);x++){const y=s-x;if(SC.T[x][y]===1&&(!SC.COL[x][y]||SC.COL[x][y].b))drawFloor(x,y)}
   if(SC.kind==='dungeon'){const[rx,ry]=iso(24.5,20.5);ctx.strokeStyle='rgba(150,60,50,.28)';ctx.lineWidth=2;for(const r of[4.6,3.6]){ctx.beginPath();ctx.ellipse(rx,ry,r*32*1.414,r*16*1.414,0,0,7);ctx.stroke()}
     const ex=SC.exit;if(ex&&art('portal')){const[a,b]=iso(ex.x+.5,ex.y+.5);ctx.globalAlpha=.85+.15*Math.sin(SC.t*3);drawArt('portal',a,b);ctx.globalAlpha=1}
     else if(ex){const[a,b]=iso(ex.x+.5,ex.y+.5);const p=.5+.5*Math.sin(SC.t*3);ctx.fillStyle=`rgba(246,220,138,${.25+.15*p})`;ctx.beginPath();ctx.ellipse(a,b,36,18,0,0,7);ctx.fill();ctx.strokeStyle='rgba(255,236,170,.85)';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(a,b,36,18,0,0,7);ctx.stroke()}}
@@ -240,7 +251,7 @@ function render(){
   items.sort((a,b)=>a.k-b.k);let ii=0;
   for(let s=0;s<=SC.W+SC.H-2;s++){
     while(ii<items.length&&items[ii].k<s){const it=items[ii++];it.u?drawUnit(it.u):drawObj(it.o)}
-    for(let x=Math.max(0,s-SC.H+1);x<=Math.min(SC.W-1,s);x++){const y=s-x,c=SC.COL[x][y];if(!c)continue;if(c.wall)drawWall(x,y,cutFor(x,y));else drawBuildingTile(x,y,c.b,cutFor(x,y)?.35:1)}
+    for(let x=Math.max(0,s-SC.H+1);x<=Math.min(SC.W-1,s);x++){const y=s-x,c=SC.COL[x][y];if(!c)continue;if(c.wall)drawWall(x,y,cutFor(x,y));else if(c.b.spr&&bldArt(c.b.spr)){const b=c.b;if(x===b.x0&&y===b.y1)drawBuildingHalf(b,0,cutFor(x,y)?.35:1);if(x===b.x1&&y===b.y0)drawBuildingHalf(b,1,cutFor(x,y)?.35:1)}else drawBuildingTile(x,y,c.b,cutFor(x,y)?.35:1)}
   }
   while(ii<items.length){const it=items[ii++];it.u?drawUnit(it.u):drawObj(it.o)}
   for(const p of SC.projs){const[x,y]=iso(p.x,p.y);if(p.kind==='arrow'){const fx=(p.dx-p.dy)*.9,fy=(p.dx+p.dy)*.45;ctx.strokeStyle='#ebe2cd';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-fx*10,y-18-fy*10);ctx.lineTo(x+fx*6,y-18+fy*6);ctx.stroke()}else{ctx.fillStyle='rgba(150,180,255,.4)';ctx.beginPath();ctx.arc(x,y-18,8,0,7);ctx.fill();ctx.fillStyle='#dfe8ff';ctx.beginPath();ctx.arc(x,y-18,3.5,0,7);ctx.fill()}}
