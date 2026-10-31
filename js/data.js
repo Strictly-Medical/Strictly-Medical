@@ -4,7 +4,7 @@
 const CLASSES={
   knight:{name:'Knight',role:'Melee',hp:130,dmg:18,cd:.42,st:14,skill:'Shield Bash',skillCd:7,stab:1,range:1,
     desc:'Sweeps the three tiles in front. Shield Bash knocks enemies back and can interrupt the boss mid-attack.',
-    look:{body:'#8e9fb3',tabard:'#e8dfca',trim:'#b3362e',helm:'#c6cdd6',cape:'#7a2a24',head:'helm',weapon:'sword',shield:'#e8dfca'}},
+    look:{body:'#8e9fb3',tabard:'#e8dfca',trim:'#b3362e',helm:'#c6cdd6',cape:'#7a2a24',head:'helm',weapon:'sword',shield:'#e8dfca',sprite:'knight'}},
   ranger:{name:'Ranger',role:'Ranged',hp:95,dmg:14,cd:.42,st:10,skill:'Volley',skillCd:6,stab:1,range:7,
     desc:'Shoots arrows down a grid line. Volley fires three lines at once. Good for mining ore from a distance.',
     look:{body:'#5d6b45',tabard:'#e8dfca',trim:'#b3362e',helm:'#47563a',cape:'#3e4a2e',head:'hood',weapon:'bow'}},

@@ -17,6 +17,7 @@ Plain HTML, CSS and JavaScript with no build step. Hosted on GitHub Pages from `
 - `js/render.js`: all drawing and the HUD.
 - `js/main.js`: game loop and start-up.
 - `assets/sprites/`: game-ready sprites, already scaled for the 64x32 tile grid.
+- Character sprite sheets (`CHARS` in `js/core.js`): frames side by side at 3x game size. A unit's `look.sprite` picks the sheet; units without one are drawn procedurally in `drawFigure`. So far only the knight class has one (`knight-walk.png`, 4-frame walk, front facing, mirrored for left and reused for back facing until a back sheet exists). Source sheets are in `art/characters/`.
 - `manifest.webmanifest`, `sw.js`, `assets/icons/`: makes the game installable to a home screen and playable offline. Bump `VERSION` in `sw.js` when adding or renaming files.
 - `assets/ui/`: title backdrop and emblem, compressed from the originals in `art/`.
 - `art/`: source art (`emblem.png` is the logo and app-icon master; `title-bg.png` and `title-mockup.png` are the title screen backdrop and its reference mockup) (full-size tile cut-outs, the original ChatGPT tile sheet, SpriteCook character sprites). Not loaded by the game.
