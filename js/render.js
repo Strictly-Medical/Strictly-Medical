@@ -65,13 +65,16 @@ function drawSpriteFigure(u,L,C,sx,sy,o){
   const s=o.scale||u.scale||1,f=u.face||{x:0,y:1},sfx=f.x-f.y;
   if(sfx!==0)u._dir=sfx<0?-1:1;const dir=u._dir||1,kneel=u.kneel||u.drink>0;
   if(u.prog<1)u._walkT=SC.t;
-  const walking=SC.t-(u._walkT??-9)<.1,fr=walking?C.walk[Math.floor(SC.t*11+u.id*.37)%C.walk.length]:C.idle;
+  const walking=SC.t-(u._walkT??-9)<.1,wp=SC.t*11+u.id*.37,fi=Math.floor(wp)%C.walk.length,fr=walking?C.walk[fi]:C.idle;
+  // Walking: rise on the passing frames, dip on the strides. Standing: a slow breath.
+  const bob=walking?-(fi%2?2:0)-Math.sin((wp%1)*Math.PI)*.8:0,breath=walking?0:Math.sin(SC.t*2.2+u.id)*.5+.5;
   ctx.save();ctx.translate(sx,sy);
   if(o.ring){ctx.strokeStyle=o.ring;ctx.globalAlpha=.85;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,0,14,7,0,0,7);ctx.stroke();ctx.globalAlpha=1}
   ellipse(2,1,12*s,5*s,'rgba(0,0,0,.35)');
   if(u.inv>0&&u.dash>0)ctx.globalAlpha=.55;
   ctx.scale(dir*s,s);if(kneel){ctx.translate(0,1);ctx.scale(1,.9)}
-  ctx.drawImage(u.flash>0?C.white:C.im,fr*C.fw,0,C.fw,C.fh,-C.ax,-C.ay,C.w,C.h);
+  ctx.save();ctx.translate(0,bob);if(breath)ctx.scale(1-breath*.008,1+breath*.018);
+  ctx.drawImage(u.flash>0?C.white:C.im,fr*C.fw,0,C.fw,C.fh,-C.ax,-C.ay,C.w,C.h);ctx.restore();
   if(u.atkT>0&&L.weapon==='sword'){const sw=1-u.atkT/.22;ctx.save();ctx.translate(6,-34);ctx.rotate(-1.9+sw*2.6);ctx.strokeStyle='#e4e8ee';ctx.lineWidth=3;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(24,0);ctx.stroke();ctx.strokeStyle='#c9a24e';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(3,-4.5);ctx.lineTo(3,4.5);ctx.stroke();ctx.restore();
     if(u.atkT>.08){ctx.strokeStyle=`rgba(245,235,205,${u.atkT*3})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(8,-26,24,-1.6,.6);ctx.stroke()}}
   ctx.restore();ctx.globalAlpha=1;
