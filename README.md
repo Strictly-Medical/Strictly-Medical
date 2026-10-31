@@ -2,7 +2,7 @@
 
 A co-op isometric dungeon game about the Order of the Ninety and Nine, the first guild of medic knights. They go into dungeons to carry out the fallen, and they are absolutely not conquering anything.
 
-**Play:** https://bondservant-of-christ.github.io/strictly-medical/
+**Play:** https://bondservant-of-christ.github.io/Strictly-Medical/
 
 ## What's in this build
 - Lanternhold, a village on a floating island: Captain Maren (main quest and party setup), Odo the smith (sell ore, forge upgrades), Sister Ilse (flasks and stabilizing gear) and Tobin the miller (side quest).
