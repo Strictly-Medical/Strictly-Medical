@@ -42,11 +42,11 @@ function buildVillage(){
   const apo=bld('apothecary',8,17,'apothecary');
   const mill=bld('mill',21,20,'mill');
   bld('cottage',5,9,'cottage');
-  bld('cottage',26,15,'cottage');
+  bld('cottage',20,4,'cottage');
   // Paths: guild apron, forge yard, lanes to every door, and a footpath into the south orchard.
   const path=(x0,y0,x1,y1,st)=>{for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)if(!sc.COL[x][y]){sc.T[x][y]=1;sc.ST[x][y]=st}};
   path(20,15,25,16,'c');path(13,14,14,17,'d');path(7,15,12,16,'d');path(13,18,13,21,'c');path(10,21,13,22,'c');
-  path(18,20,19,25,'c');path(19,24,26,25,'c');path(6,13,6,15,'d');path(26,19,27,23,'d');path(17,25,17,28,'d');
+  path(18,20,19,25,'c');path(19,24,26,25,'c');path(6,12,6,15,'d');path(18,7,21,7,'d');path(17,25,17,28,'d');
   sc.gate={x:17,y:1};
   placeObj({type:'gate',x:17,y:1,block:true,kOff:-.1});sc.B[16][1]={type:'gate'};sc.B[18][1]={type:'gate'};
   placeObj({type:'well',x:11+o,y:11+o,block:true});
