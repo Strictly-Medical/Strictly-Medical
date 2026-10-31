@@ -16,6 +16,7 @@ Plain HTML, CSS and JavaScript with no build step. Hosted on GitHub Pages from `
 - `js/render.js`: all drawing and the HUD.
 - `js/main.js`: game loop and start-up.
 - `assets/sprites/`: game-ready sprites, already scaled for the 64x32 tile grid.
+- `manifest.webmanifest`, `sw.js`, `assets/icons/`: makes the game installable to a home screen and playable offline. Bump `VERSION` in `sw.js` when adding or renaming files.
 - `art/`: source art (full-size tile cut-outs, the original ChatGPT tile sheet, SpriteCook character sprites). Not loaded by the game.
 
 ## Conventions

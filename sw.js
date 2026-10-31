@@ -1,0 +1,10 @@
+// Offline support. Network first so new versions show up right away; the cache is the fallback.
+// Bump VERSION when files are added or renamed.
+const VERSION='sm-v1';
+const SHELL=["./", "index.html", "manifest.webmanifest", "css/style.css", "js/actors.js", "js/combat.js", "js/core.js", "js/data.js", "js/input.js", "js/main.js", "js/render.js", "js/sprites.js", "js/ui.js", "js/world.js", "assets/sprites/banner.png", "assets/sprites/bones.png", "assets/sprites/brazier.png", "assets/sprites/chest.png", "assets/sprites/chestOpen.png", "assets/sprites/cliff1.png", "assets/sprites/cliff2.png", "assets/sprites/cobble1.png", "assets/sprites/cobble2.png", "assets/sprites/cobble3.png", "assets/sprites/copper.png", "assets/sprites/dfloor1.png", "assets/sprites/dfloor2.png", "assets/sprites/dfloor3.png", "assets/sprites/dirt1.png", "assets/sprites/dirt2.png", "assets/sprites/grass1.png", "assets/sprites/grass2.png", "assets/sprites/grass3.png", "assets/sprites/iron.png", "assets/sprites/portal.png", "assets/sprites/rune1.png", "assets/sprites/rune2.png", "assets/sprites/stub.png", "assets/sprites/tree.png", "assets/sprites/well.png", "assets/icons/apple-touch-icon.png", "assets/icons/icon-192.png", "assets/icons/icon-512.png", "assets/icons/icon-maskable-512.png"];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==VERSION).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET'||new URL(e.request.url).origin!==location.origin)return;
+  e.respondWith(fetch(e.request).then(r=>{const copy=r.clone();caches.open(VERSION).then(c=>c.put(e.request,copy));return r}).catch(()=>caches.match(e.request,{ignoreSearch:true})));
+});
