@@ -44,7 +44,8 @@ function muster(first,focusSel){
     <h3>Party size</h3><p class="hint">AI companions stand in for your friends and take the other classes.</p><div class="segs">${sz}</div>
     <h3>If the whole party falls</h3><div class="opts rules">${rl}</div>
     <h3>Controls</h3><div class="keys-panel"><span><kbd>WASD</kbd> move along the grid</span><span><kbd>J</kbd> strike</span><span><kbd>L</kbd> skill</span><span><kbd>K</kbd> dodge</span><span><kbd>E</kbd> use, hold to stabilize, revive or extract</span><span><kbd>Q</kbd> flask</span></div>
-    <div class="actions"><button type="button" class="primary" data-go>${first?'Enter the village':'Done'}</button></div>`,el=>{
+    <div class="actions"><button type="button" class="primary" data-go>${first?'Enter the village':'Done'}</button>${first?'<button type="button" data-back>Back to title</button>':''}</div>`,el=>{
+      const bk=el.querySelector('[data-back]');if(bk)bk.addEventListener('click',()=>{hidePanel();showTitle()});
       el.querySelectorAll('[data-cls]').forEach(b=>b.addEventListener('click',()=>{S.cls=b.dataset.cls;muster(first,`[data-cls="${S.cls}"]`)}));
       el.querySelectorAll('[data-size]').forEach(b=>b.addEventListener('click',()=>{S.size=+b.dataset.size;muster(first,`[data-size="${S.size}"]`)}));
       el.querySelectorAll('[data-rule]').forEach(b=>b.addEventListener('click',()=>{S.rule=b.dataset.rule;muster(first,`[data-rule="${S.rule}"]`)}));

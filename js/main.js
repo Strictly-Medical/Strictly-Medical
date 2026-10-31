@@ -36,6 +36,6 @@ function ambient(dt){
 
 let last=performance.now();
 function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(!document.hidden)step(dt);render();pressed.clear();requestAnimationFrame(frame)}
-muster(true);
+showTitle();
 requestAnimationFrame(frame);
 if(window.__lgTest)window.__lgTest({S,get SC(){return SC},enterVillage,enterDungeon,endRun,keys,pressed,talkGate,talkOdo,talkCaptain,talkIlse,talkTobin,hidePanel,muster,heroes});

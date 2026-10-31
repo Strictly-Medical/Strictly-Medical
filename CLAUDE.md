@@ -13,11 +13,13 @@ Plain HTML, CSS and JavaScript with no build step. Hosted on GitHub Pages from `
 - `js/combat.js`: damage, attacks, projectiles, telegraphed attack tiles, medic actions (stabilize, carry, deliver).
 - `js/actors.js`: player control, companion AI, enemies, the Lantern Warden.
 - `js/ui.js`: end of run, dialogue panels, shops, quests.
+- `js/title.js`: title screen (menu, options, credits, ember particles over the backdrop's braziers). Options persist in localStorage under `sm-options`.
 - `js/render.js`: all drawing and the HUD.
 - `js/main.js`: game loop and start-up.
 - `assets/sprites/`: game-ready sprites, already scaled for the 64x32 tile grid.
 - `manifest.webmanifest`, `sw.js`, `assets/icons/`: makes the game installable to a home screen and playable offline. Bump `VERSION` in `sw.js` when adding or renaming files.
-- `art/`: source art (full-size tile cut-outs, the original ChatGPT tile sheet, SpriteCook character sprites). Not loaded by the game.
+- `assets/ui/`: title backdrop and emblem, compressed from the originals in `art/`.
+- `art/`: source art (`emblem.png` is the logo and app-icon master; `title-bg.png` and `title-mockup.png` are the title screen backdrop and its reference mockup) (full-size tile cut-outs, the original ChatGPT tile sheet, SpriteCook character sprites). Not loaded by the game.
 
 ## Conventions
 - Grid coordinates are tiles. `iso(x,y)` maps to screen as `[(x-y)*32, (x+y)*16]`. Movement is 4-directional along the grid in real time.
