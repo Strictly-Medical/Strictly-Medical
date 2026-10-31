@@ -49,7 +49,7 @@ function muster(first,focusSel){
       el.querySelectorAll('[data-cls]').forEach(b=>b.addEventListener('click',()=>{S.cls=b.dataset.cls;muster(first,`[data-cls="${S.cls}"]`)}));
       el.querySelectorAll('[data-size]').forEach(b=>b.addEventListener('click',()=>{S.size=+b.dataset.size;muster(first,`[data-size="${S.size}"]`)}));
       el.querySelectorAll('[data-rule]').forEach(b=>b.addEventListener('click',()=>{S.rule=b.dataset.rule;muster(first,`[data-rule="${S.rule}"]`)}));
-      el.querySelector('[data-go]').addEventListener('click',()=>{hidePanel();if(first){S.started=true;enterVillage('start')}else rebuildParty()});
+      el.querySelector('[data-go]').addEventListener('click',()=>{hidePanel();if(first){S.started=true;document.body.classList.add('playing');enterVillage('start')}else rebuildParty()});
       if(focusSel){const f=el.querySelector(focusSel);if(f)f.setAttribute('data-focus','')}
     },!first);
 }

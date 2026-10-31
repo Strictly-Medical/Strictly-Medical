@@ -35,7 +35,7 @@ function drinkFlask(p){const q=pos(p);if(S.flasks<=0){text(q.x,q.y,'no flasks','
 function villagePrompt(p){
   let best=null;
   for(const u of SC.units)if(u.kind==='npc'&&cheb(p.tx,p.ty,u.tx,u.ty)<=1)best={label:`E  Talk to ${u.name}`,fn:()=>{u.face={x:Math.sign(p.tx-u.tx),y:Math.sign(p.ty-u.ty)};if(u.face.x&&u.face.y)u.face.y=0;u.talk()}};
-  if(!best&&cheb(p.tx,p.ty,11,1)<=1)best={label:'E  Enter the Ashen Barrow',fn:talkGate};
+  if(!best&&cheb(p.tx,p.ty,SC.gate.x,SC.gate.y)<=1)best={label:'E  Enter the Ashen Barrow',fn:talkGate};
   return best;
 }
 

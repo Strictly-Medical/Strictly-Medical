@@ -10,14 +10,14 @@ const calmMotion=()=>OPTS.reduceMotion||(window.matchMedia&&matchMedia('(prefers
 let titleOn=false;
 
 function showTitle(){
-  titleOn=true;titleEl.hidden=false;document.body.classList.add('on-title');
+  titleOn=true;document.body.classList.remove('playing');titleEl.hidden=false;document.body.classList.add('on-title');
   titleEl.classList.toggle('calm',calmMotion());
   requestAnimationFrame(()=>titleEl.classList.add('in'));
   const b=titleEl.querySelector('[data-menu="begin"]');if(b)b.focus({preventScroll:true});
 }
 function hideTitle(){titleOn=false;titleEl.classList.remove('in');document.body.classList.remove('on-title');setTimeout(()=>{if(!titleOn)titleEl.hidden=true},450)}
 
-function titleOptions(){
+function titleOptions(back){back=back||showTitle;
   const fsOk=!!(document.documentElement.requestFullscreen);
   const row=(k,label,on,desc)=>`<button type="button" class="opt ${on?'on':''}" data-opt="${k}" aria-pressed="${on}"><span class="opt-t">${label}</span><span class="opt-d">${desc}</span></button>`;
   showPanel(`<div class="who">Strictly Medical</div><h2>Options</h2><div class="opts rules">
@@ -27,10 +27,10 @@ function titleOptions(){
     </div><div class="actions"><button type="button" class="primary" data-done>Done</button></div>`,el=>{
       el.querySelectorAll('[data-opt]').forEach(b=>b.addEventListener('click',()=>{
         const k=b.dataset.opt;
-        if(k==='fullscreen'){const p=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();Promise.resolve(p).catch(()=>{}).then(()=>setTimeout(titleOptions,120));return}
-        if(k==='pad'){OPTS.pad=OPTS.pad==='dpad'?'stick':'dpad';saveOpts();applyPadMode();titleOptions();return}
-        OPTS[k]=!OPTS[k];saveOpts();titleEl.classList.toggle('calm',calmMotion());titleOptions()}));
-      el.querySelector('[data-done]').addEventListener('click',()=>{hidePanel();showTitle()});
+        if(k==='fullscreen'){const p=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();Promise.resolve(p).catch(()=>{}).then(()=>setTimeout(()=>titleOptions(back),120));return}
+        if(k==='pad'){OPTS.pad=OPTS.pad==='dpad'?'stick':'dpad';saveOpts();applyPadMode();titleOptions(back);return}
+        OPTS[k]=!OPTS[k];saveOpts();titleEl.classList.toggle('calm',calmMotion());titleOptions(back)}));
+      el.querySelector('[data-done]').addEventListener('click',()=>{hidePanel();back()});
     });
 }
 function titleCredits(){
@@ -85,3 +85,27 @@ function titleFrame(now){
   tctx.globalCompositeOperation='source-over';
 }
 requestAnimationFrame(titleFrame);
+
+/* ---------- pause ---------- */
+// Any open panel already stops the game loop, so pausing is just a panel.
+function pauseMenu(){
+  if(!S.started||titleOn||panelOpen)return;
+  const where=SC&&SC.kind==='dungeon'?'The Ashen Barrow':'Lanternhold';
+  showPanel(`<div class="who">Paused · ${where}</div><h2>Strictly Medical</h2>
+    <div class="actions"><button type="button" class="primary" data-p="resume">Resume</button><button type="button" data-p="options">Options</button><button type="button" data-p="title">Return to title</button></div>`,el=>{
+      el.querySelector('[data-p=resume]').addEventListener('click',hidePanel);
+      el.querySelector('[data-p=options]').addEventListener('click',()=>titleOptions(pauseMenuAfter));
+      el.querySelector('[data-p=title]').addEventListener('click',()=>{
+        if(SC&&SC.kind==='dungeon')showPanel(`<div class="who">Return to title</div><h2>Abandon this run?</h2><p>You are still in the Barrow. Anything in your pack is left behind.</p>
+          <div class="actions"><button type="button" class="primary" data-c="stay">Keep playing</button><button type="button" data-c="go">Abandon and return to title</button></div>`,e2=>{
+            e2.querySelector('[data-c=stay]').addEventListener('click',()=>{hidePanel();pauseMenu()});
+            e2.querySelector('[data-c=go]').addEventListener('click',toTitle)});
+        else toTitle()});
+    });
+}
+function pauseMenuAfter(){pauseMenu()}
+function toTitle(){hidePanel();S.started=false;showTitle()}
+document.getElementById('pause-btn').addEventListener('click',ev=>{ev.preventDefault();pauseMenu()});
+// Remember whether a panel was open before any handler ran, so Esc that closes a dialog doesn't also open the pause menu.
+let keyPanelWas=false;window.addEventListener('keydown',()=>{keyPanelWas=panelOpen},true);
+window.addEventListener('keydown',ev=>{if((ev.code==='Escape'||ev.code==='KeyP')&&!keyPanelWas&&!panelOpen&&!titleOn&&S.started){ev.preventDefault();pauseMenu()}});

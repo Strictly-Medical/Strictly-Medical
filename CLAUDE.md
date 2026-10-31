@@ -8,13 +8,13 @@ Plain HTML, CSS and JavaScript with no build step. Hosted on GitHub Pages from `
 - `js/sprites.js`: size and anchor (`w`, `h`, `ax`, `ay`, in game pixels) for each image in `assets/sprites/`.
 - `js/core.js`: canvas setup, sprite loading (`art()`, `drawArt()`), math helpers.
 - `js/data.js`: classes, failure rules, wounded knights, enemy types, and `S`, the saved game state.
-- `js/world.js`: scene object `SC`, village and dungeon layouts, party creation, grid movement, BFS pathfinding.
+- `js/world.js`: scene object `SC`, village and dungeon layouts, party creation, grid movement, BFS pathfinding. The village is a 34x34 island; `VO` is the offset applied to the original 22x22 village layout, and `SC.gate` marks the Barrow gate.
 - `js/input.js`: keyboard, mouse and touch. On touch screens, movement is either the isometric D-pad (a plus-shaped pad rotated 45° so each arm is a grid direction; the default) or the left-half joystick, set in Options (`OPTS.pad`). Action buttons sit in a thumb arc around Strike.
 - `js/combat.js`: damage, attacks, projectiles, telegraphed attack tiles, medic actions (stabilize, carry, deliver).
 - `js/actors.js`: player control, companion AI, enemies, the Lantern Warden.
 - `js/ui.js`: end of run, dialogue panels, shops, quests.
-- `js/title.js`: title screen (menu, options, credits, ember particles over the backdrop's braziers). Options persist in localStorage under `sm-options`.
-- `js/render.js`: all drawing and the HUD.
+- `js/title.js`: title screen (menu, options, credits, ember particles over the backdrop's braziers) and the pause menu (pause button, Esc or P). Options persist in localStorage under `sm-options` and are shared by the title and pause menus. Any open panel pauses the game loop.
+- `js/render.js`: all drawing and the HUD. The HUD is Souls-style: unboxed health/stamina/skill bars top left with a lingering damage trail, purse top right under the pause button, boss bar along the bottom.
 - `js/main.js`: game loop and start-up.
 - `assets/sprites/`: game-ready sprites, already scaled for the 64x32 tile grid.
 - Character sprite sheets (`CHARS` in `js/core.js`): frames side by side at 3x game size. A unit's `look.sprite` picks the sheet; units without one are drawn procedurally in `drawFigure`. So far only the knight class has one (`knight-walk.png`: 4-frame walk plus a standing frame, front facing, mirrored for left and reused for back facing until a back sheet exists). Source sheets are in `art/characters/`; `art/characters/knight/build.py` rebuilds the knight sheet from them.

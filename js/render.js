@@ -168,7 +168,7 @@ function drawObj(o){
   else if(o.type==='anvil'){ellipse(sx+2,sy,13,6,'rgba(0,0,0,.3)');ctx.fillStyle='#4a3a2a';ctx.fillRect(sx-6,sy-10,12,10);ctx.fillStyle='#4b4e55';ctx.beginPath();ctx.moveTo(sx-14,sy-16);ctx.lineTo(sx+12,sy-16);ctx.lineTo(sx+8,sy-10);ctx.lineTo(sx-10,sy-10);ctx.closePath();ctx.fill()}
   else if(o.type==='banner'){ctx.strokeStyle='#3a2a1e';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx,sy-60);ctx.stroke();const w=Math.sin(SC.t*3+o.x)*2;ctx.fillStyle='#e8dfca';ctx.beginPath();ctx.moveTo(sx+2,sy-58);ctx.lineTo(sx+20,sy-56+w);ctx.lineTo(sx+20,sy-30+w);ctx.lineTo(sx+11,sy-35+w);ctx.lineTo(sx+2,sy-30);ctx.closePath();ctx.fill();ctx.fillStyle='#b3362e';ctx.fillRect(sx+9,sy-52+w*.5,4,14);ctx.fillRect(sx+6,sy-47+w*.5,10,4)}
   else if(o.type==='chimney'){const b=SC.forge;const mid=(b.y0+b.y1+1)/2,half=(b.y1+1-b.y0)/2;const base=b.eave+(b.ridge-b.eave)*(1-Math.abs(o.y+.4-mid)/half);const[cx,cy]=iso(o.x+.4,o.y+.4);ctx.fillStyle='#5a4a3e';ctx.fillRect(cx-6,cy-base-26,12,26);ctx.fillStyle='#3a2e26';ctx.fillRect(cx-7,cy-base-28,14,4)}
-  else if(o.type==='gate'){const L=iso(10.5,1.5),R=iso(12.5,1.5);const pil=(p)=>{ctx.fillStyle='#4a4652';ctx.fillRect(p[0]-12,p[1]-74,24,74);ctx.fillStyle='#5c5766';ctx.fillRect(p[0]-12,p[1]-74,12,74)};
+  else if(o.type==='gate'){const L=iso(o.x-.5,o.y+.5),R=iso(o.x+1.5,o.y+.5);const pil=(p)=>{ctx.fillStyle='#4a4652';ctx.fillRect(p[0]-12,p[1]-74,24,74);ctx.fillStyle='#5c5766';ctx.fillRect(p[0]-12,p[1]-74,12,74)};
     ctx.fillStyle='#120f18';poly([[L[0]+10,L[1]],[R[0]-10,R[1]],[R[0]-10,R[1]-62],[L[0]+10,L[1]-62]],'#120f18');
     const g=ctx.createLinearGradient(0,sy-60,0,sy);g.addColorStop(0,'rgba(140,110,200,.05)');g.addColorStop(1,'rgba(140,110,200,.35)');poly([[L[0]+10,L[1]],[R[0]-10,R[1]],[R[0]-10,R[1]-62],[L[0]+10,L[1]-62]],g);
     pil(L);pil(R);poly([[L[0]-16,L[1]-74],[R[0]+16,R[1]-74],[R[0]+16,R[1]-86],[L[0]-16,L[1]-86]],'#5c5766');
@@ -290,50 +290,68 @@ function flaskIcon(x,y,full){
   ctx.strokeStyle=full?'#e8c27a':'rgba(210,171,82,.45)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y+2,4.2,0,7);ctx.stroke();ctx.strokeRect(x-1.6,y-5,3.2,3);
 }
 function goldRule(cx,y,half){for(const s of[-1,1]){const g=ctx.createLinearGradient(cx,0,cx+s*half,0);g.addColorStop(0,GOLD);g.addColorStop(1,'rgba(210,171,82,0)');ctx.fillStyle=g;ctx.fillRect(s<0?cx-half:cx,y,half,1)}diamond(cx,y+.5,3)}
+// Souls-style bar: bronze end cap, dark track, gradient fill, and a pale trail that lingers where health was just lost.
+function soulBar(x,y,w,h,f,trail,top,bot){
+  x=Math.round(x);y=Math.round(y);
+  ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(x-1,y-1,w+2,h+2);
+  ctx.fillStyle='#120f0c';ctx.fillRect(x,y,w,h);
+  if(trail>f){ctx.fillStyle='rgba(222,200,140,.85)';ctx.fillRect(x,y,w*Math.min(1,trail),h)}
+  if(f>0){const g=ctx.createLinearGradient(0,y,0,y+h);g.addColorStop(0,top);g.addColorStop(1,bot);ctx.fillStyle=g;ctx.fillRect(x,y,w*Math.min(1,f),h);ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(x,y,w*Math.min(1,f),1)}
+  ctx.strokeStyle='rgba(122,104,78,.85)';ctx.lineWidth=1;ctx.strokeRect(x-.5,y-.5,w+1,h+1);
+  const cap=(cx)=>{const g=ctx.createLinearGradient(cx-3,0,cx+3,0);g.addColorStop(0,'#5a4a32');g.addColorStop(.5,'#c9a866');g.addColorStop(1,'#4a3c28');ctx.fillStyle=g;ctx.fillRect(cx-2,y-3,4,h+6)};
+  cap(x-2);ctx.fillStyle='#8a7550';ctx.fillRect(x+w+1,y-1,2,h+2);
+}
+function trailOf(u,f){if(u._tr===undefined||f>u._tr){u._tr=f;u._trT=0}else if(f<u._lf)u._trT=SC.t+.7;u._lf=f;if(SC.t>u._trT)u._tr+=(f-u._tr)*.06;return u._tr}
+const coarse=typeof matchMedia!=='undefined'&&matchMedia('(pointer:coarse)').matches;
 function hud(){
   if(!S.started||!SC)return;const p=SC.player,c=CLASSES[p.cls];
   // Shrink the HUD on short screens (landscape phones); VW/VH are the scaled-down canvas size.
   const k=Math.max(.7,Math.min(1,H/560)),VW=W/k,VH=H/k;ctx.save();ctx.scale(k,k);const narrow=VW<600;
   ctx.textBaseline='alphabetic';
-  // Party panel
-  const pw=Math.min(narrow?240:284,VW-24);const allies=heroes().filter(h=>h.ai);const ph=98+allies.length*18;
-  frameBox(12,12,pw,ph);
-  ctx.font=`18px ${FELL}`;ctx.fillStyle=PARCH;ctx.fillText('You',24,36);const yw=ctx.measureText('You').width;
-  diamond(24+yw+9,31,2.5);ctx.font=`14px ${FELL}`;ctx.fillStyle=GOLD;ctx.fillText(c.name,24+yw+17,36);
-  const bx=86,bw=pw-bx-14;ctx.font=`600 9.5px ${SANS}`;ctx.fillStyle=MUTED;
-  ctx.fillText('HEALTH',24,53);ctx.fillText('STAMINA',24,68);
-  meter(bx,45,bw,10,p.hp/p.maxhp,'#d4675e','#7d2a26');meter(bx,61,bw,8,p.st/100,'#cfd6a0','#6f7d3e');
-  for(let i=0;i<5;i++)flaskIcon(29+i*13,85,i<S.flasks);
-  const ready=p.skillCd<=0;ctx.font=`13px ${FELL}`;ctx.fillStyle=ready?'#f0d58a':MUTED;ctx.textAlign='right';
-  ctx.fillText(`${c.skill} · ${ready?'ready':Math.ceil(p.skillCd)+'s'}`,12+pw-14,89);ctx.textAlign='left';
-  if(allies.length){ctx.fillStyle='rgba(210,171,82,.25)';ctx.fillRect(22,99,pw-20,1)}
-  allies.forEach((a,i)=>{const y=116+i*18;ctx.fillStyle=a.ring;ctx.beginPath();ctx.arc(28,y-4,4,0,7);ctx.fill();ctx.strokeStyle='rgba(0,0,0,.5)';ctx.stroke();
-    ctx.fillStyle=PARCH;ctx.font=`500 12.5px ${SANS}`;ctx.fillText(a.name,38,y);const nw=ctx.measureText(a.name).width;ctx.fillStyle=MUTED;ctx.font=`500 11px ${SANS}`;ctx.fillText(CLASSES[a.cls].name,44+nw,y);
-    if(a.down){ctx.fillStyle='#ef8a7e';ctx.font=`12px ${FELL}`;ctx.textAlign='right';ctx.fillText('Down',12+pw-14,y);ctx.textAlign='left'}else meter(12+pw-14-64,y-8,64,7,a.hp/a.maxhp,'#9fd27f','#4c7a36')});
-  // Location plate
-  let title,rl;
-  if(SC.kind==='dungeon'){const m=KNIGHTS.filter(k=>S.roster[k.id]==='missing').length;title='Ashen Barrow';rl=['Floor 1',`Pack · ${SC.pack.coins} coins · ${SC.pack.copper} copper · ${SC.pack.iron} iron`,m?`Wounded still below · ${m}`:'All wounded accounted for']}
-  else{title='Lanternhold';rl=[`${S.coins} coins · ${S.ore.copper} copper · ${S.ore.iron} iron`]}
-  ctx.font=`17px ${FELL}`;const tw=ctx.measureText(title).width;ctx.font=`500 12.5px ${SANS}`;
-  const rw=Math.max(tw+40,...rl.map(s=>ctx.measureText(s).width))+30,rh=42+rl.length*17,rx=narrow?12:VW-12-rw,ry=narrow?12+ph+8:12;
-  frameBox(rx,ry,rw,rh);ctx.textAlign='center';const mx=rx+rw/2;
-  ctx.font=`17px ${FELL}`;ctx.fillStyle=GOLD;ctx.fillText(title,mx,ry+25);diamond(mx-tw/2-10,ry+20,2.5);diamond(mx+tw/2+10,ry+20,2.5);
-  ctx.fillStyle='rgba(210,171,82,.25)';ctx.fillRect(rx+14,ry+33,rw-28,1);
-  ctx.font=`500 12.5px ${SANS}`;ctx.fillStyle=PARCH;rl.forEach((s,i)=>ctx.fillText(s,mx,ry+50+i*17));ctx.textAlign='left';
-  // Boss bar
+  // Player: health, stamina and skill bars in the top left, Souls style, with no panel behind them.
+  const x0=26;let y=24;const hpw=Math.min(VW*.42,150+p.maxhp*1.25),stw=Math.min(VW*.32,190),skw=Math.min(VW*.24,130);
+  const hf=Math.max(0,p.hp/p.maxhp);soulBar(x0,y,hpw,10,hf,trailOf(p,hf),'#b8322a','#6a1410');
+  soulBar(x0,y+17,stw,7,p.st/100,0,'#5f9a4a','#2c5a24');
+  const sk=1-Math.max(0,p.skillCd)/c.skillCd;soulBar(x0,y+31,skw,5,sk,0,p.skillCd>0?'#4a5f8e':'#7d9de0',p.skillCd>0?'#26324e':'#3a5294');
+  ctx.font=`13px ${FELL}`;ctx.shadowColor='#000';ctx.shadowBlur=4;ctx.fillStyle=p.skillCd>0?MUTED:'#cfdcff';ctx.fillText(c.skill,x0+skw+10,y+37);
+  // Flask count under the bars.
+  y+=50;ctx.save();ctx.translate(x0+6,y+6);ctx.scale(1.5,1.5);flaskIcon(0,0,S.flasks>0);ctx.restore();
+  ctx.font=`18px ${FELL}`;ctx.fillStyle=S.flasks>0?PARCH:MUTED;ctx.fillText(String(S.flasks),x0+20,y+14);
+  // Companions, like summoned phantoms: name and a thin bar.
+  const allies=heroes().filter(h=>h.ai);
+  allies.forEach((a,i)=>{const ay=y+38+i*24;ctx.fillStyle=a.ring;ctx.beginPath();ctx.arc(x0+3,ay-4,3.5,0,7);ctx.fill();
+    ctx.font=`13px ${FELL}`;ctx.fillStyle=a.down?'#ef8a7e':PARCH;ctx.fillText(a.down?`${a.name} · down`:a.name,x0+12,ay);
+    if(!a.down){const af=a.hp/a.maxhp;soulBar(x0+12,ay+5,Math.min(110,VW*.2),4,af,trailOf(a,af),'#9a3a30','#5a1a14')}});
+  ctx.shadowBlur=0;
+  // Purse and pack in the top right, under the pause button.
+  let lines;
+  if(SC.kind==='dungeon'){const m=KNIGHTS.filter(kk=>S.roster[kk.id]==='missing').length;lines=[[`${SC.pack.coins} coins in pack`,18,FELL,PARCH],[`${SC.pack.copper} copper · ${SC.pack.iron} iron`,12.5,SANS,MUTED],[m?`${m} wounded still below`:'All wounded accounted for',13,FELL,GOLD]]}
+  else lines=[[`${S.coins} coins`,18,FELL,PARCH],[`${S.ore.copper} copper · ${S.ore.iron} iron`,12.5,SANS,MUTED]];
+  // The pause button is HTML at full size (42px, 12px from the top), so start below it in screen pixels, then convert.
+  ctx.textAlign='right';ctx.shadowColor='#000';ctx.shadowBlur=5;let ly=(12+42+22)/k;
+  for(const[t,sz,f,col]of lines){ctx.font=`${f===SANS?'500 ':''}${sz}px ${f}`;ctx.fillStyle=col;ctx.fillText(t,VW-20,ly);ly+=sz+5}
+  ctx.textAlign='left';ctx.shadowBlur=0;
+  // Boss bar along the bottom: name above, long thin bar. On touch screens it sits between the D-pad and the buttons.
   const b=SC.boss;let bottom=VH-14;
-  if(b&&!b.gone&&b.state!=='dormant'){const w=Math.min(440,VW-60),x=(VW-w)/2,y=VH-26;ctx.textAlign='center';ctx.font=`17px ${FELL}`;ctx.fillStyle=PARCH;ctx.shadowColor='#000';ctx.shadowBlur=6;ctx.fillText('The Lantern Warden',VW/2,y-9);ctx.shadowBlur=0;ctx.textAlign='left';
-    meter(x,y,w,10,b.hp/b.maxhp,'#c4473f','#5e1b18');diamond(x-8,y+5,4.5);diamond(x+w+8,y+5,4.5);bottom=VH-56}
-  // Interaction prompt
+  if(b&&!b.gone&&b.state!=='dormant'){const side=coarse?250:60,w=Math.max(220,Math.min(620,VW-side*2)),x=(VW-w)/2,yb=VH-(coarse?30:34);
+    ctx.font=`17px ${FELL}`;ctx.fillStyle=PARCH;ctx.shadowColor='#000';ctx.shadowBlur=6;ctx.fillText('The Lantern Warden',x,yb-9);ctx.shadowBlur=0;
+    const bf=b.hp/b.maxhp;soulBar(x,yb,w,8,bf,trailOf(b,bf),'#a8261e','#560d0a');bottom=VH-64}
+  // Interaction prompt.
   const pr=SC.prompt,live=!!(pr&&!p.down);if(live!==hud.live){hud.live=live;const ub=document.querySelector('.touch .b-act');if(ub)ub.classList.toggle('live',live)}
-  if(pr&&!p.down){ctx.font=`600 14px ${SANS}`;const tw2=ctx.measureText(pr.label).width+36;const x=(VW-tw2)/2,y=bottom-32;frameBox(x,y,tw2,28);ctx.fillStyle=PARCH;ctx.textAlign='center';ctx.fillText(pr.label,VW/2,y+19);ctx.textAlign='left';
-    if(pr.prog){const v=Math.max(0,Math.min(1,pr.prog()));if(v>0){ctx.fillStyle=GOLD;ctx.fillRect(x+4,y+23,(tw2-8)*v,2)}}}
-  // Banner
-  if(SC.banner){const bn=SC.banner;ctx.globalAlpha=Math.max(0,Math.min(1,bn.t/.4,(bn.max-bn.t)/.3));ctx.textAlign='center';const by=narrow?VH*.5:Math.max(VH*.27,12+ph+64);
-    ctx.shadowColor='rgba(0,0,0,.85)';ctx.shadowBlur=10;ctx.font=`${narrow?26:36}px ${FELL}`;
-    const g=ctx.createLinearGradient(0,by-30,0,by+4);g.addColorStop(0,'#fffaf0');g.addColorStop(1,'#c9b083');ctx.fillStyle=g;ctx.fillText(bn.title,VW/2,by);
-    ctx.shadowBlur=0;const half=Math.min(200,ctx.measureText(bn.title).width/2+50);goldRule(VW/2,by+12,half);
-    if(bn.sub){ctx.shadowBlur=8;ctx.fillStyle='#e6d8b4';ctx.font=`500 15px ${SANS}`;const words=bn.sub.split(' ');let line='',ly=by+36;for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>Math.min(560,VW-40)){ctx.fillText(line,VW/2,ly);ly+=19;line=w}else line=t}ctx.fillText(line,VW/2,ly);ctx.shadowBlur=0}
+  if(pr&&!p.down){ctx.font=`600 14px ${SANS}`;const tw2=ctx.measureText(pr.label).width+40;const x=(VW-tw2)/2,yp=bottom-34;
+    const g=ctx.createLinearGradient(x,0,x+tw2,0);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.15,'rgba(0,0,0,.72)');g.addColorStop(.85,'rgba(0,0,0,.72)');g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;ctx.fillRect(x,yp,tw2,28);ctx.fillStyle='rgba(200,184,150,.35)';ctx.fillRect(x+tw2*.1,yp,tw2*.8,1);ctx.fillRect(x+tw2*.1,yp+27,tw2*.8,1);
+    ctx.fillStyle=PARCH;ctx.textAlign='center';ctx.fillText(pr.label,VW/2,yp+19);ctx.textAlign='left';
+    if(pr.prog){const v=Math.max(0,Math.min(1,pr.prog()));if(v>0){ctx.fillStyle=GOLD;ctx.fillRect(x+tw2*.1,yp+25,tw2*.8*v,2)}}}
+  // Banner: a dark band across the screen with the title on it. The party falling gets the red treatment.
+  if(SC.banner){const bn=SC.banner,fell=/Fallen/.test(bn.title);ctx.globalAlpha=Math.max(0,Math.min(1,bn.t/.4,(bn.max-bn.t)/.3));ctx.textAlign='center';
+    const by=narrow?VH*.5:Math.max(VH*.3,170),bh=bn.sub?96:64;
+    const band=ctx.createLinearGradient(0,by-bh*.62,0,by+bh*.62);band.addColorStop(0,'rgba(0,0,0,0)');band.addColorStop(.3,'rgba(0,0,0,.6)');band.addColorStop(.7,'rgba(0,0,0,.6)');band.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=band;ctx.fillRect(0,by-bh*.62-8,VW,bh*1.24+(bn.sub?24:0));
+    ctx.font=`${fell?(narrow?34:52):(narrow?28:40)}px ${FELL}`;ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=12;
+    ctx.fillStyle=fell?'#a8261e':'#efe6d0';ctx.fillText(bn.title,VW/2,by);ctx.shadowBlur=0;
+    if(!fell){const half=Math.min(220,ctx.measureText(bn.title).width/2+60);goldRule(VW/2,by+12,half)}
+    if(bn.sub){ctx.shadowColor='#000';ctx.shadowBlur=8;ctx.fillStyle='#d8ccae';ctx.font=`500 15px ${SANS}`;const words=bn.sub.split(' ');let line='',ly2=by+38;for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>Math.min(560,VW-40)){ctx.fillText(line,VW/2,ly2);ly2+=19;line=w}else line=t}ctx.fillText(line,VW/2,ly2);ctx.shadowBlur=0}
     ctx.textAlign='left';ctx.globalAlpha=1}
   ctx.restore();
   if(joy.id!==null){ctx.strokeStyle='rgba(210,171,82,.5)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(joy.ox,joy.oy,46,0,7);ctx.stroke();ctx.strokeStyle='rgba(210,171,82,.2)';ctx.beginPath();ctx.arc(joy.ox,joy.oy,42,0,7);ctx.stroke();ctx.fillStyle='rgba(27,24,52,.75)';ctx.beginPath();ctx.arc(joy.ox+joy.x*46,joy.oy+joy.y*46,17,0,7);ctx.fill();ctx.strokeStyle=GOLD;ctx.stroke()}
