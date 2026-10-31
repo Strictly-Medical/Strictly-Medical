@@ -2,8 +2,9 @@
 // Title screen: painted backdrop, ember particles over the braziers, and the main menu.
 /* ---------- title ---------- */
 const titleEl=document.getElementById('title');
-const OPTS={reduceMotion:false};
+const OPTS={reduceMotion:false,pad:'dpad'};
 try{Object.assign(OPTS,JSON.parse(localStorage.getItem('sm-options')||'{}'))}catch(e){}
+applyPadMode();
 function saveOpts(){try{localStorage.setItem('sm-options',JSON.stringify(OPTS))}catch(e){}}
 const calmMotion=()=>OPTS.reduceMotion||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
 let titleOn=false;
@@ -20,12 +21,14 @@ function titleOptions(){
   const fsOk=!!(document.documentElement.requestFullscreen);
   const row=(k,label,on,desc)=>`<button type="button" class="opt ${on?'on':''}" data-opt="${k}" aria-pressed="${on}"><span class="opt-t">${label}</span><span class="opt-d">${desc}</span></button>`;
   showPanel(`<div class="who">Strictly Medical</div><h2>Options</h2><div class="opts rules">
+    ${row('pad','Movement: '+(OPTS.pad==='dpad'?'D-pad':'Joystick'),true,OPTS.pad==='dpad'?'An isometric D-pad on the left, one arm per grid direction. Tap to switch to the joystick.':'Touch and drag anywhere on the left half of the screen. Tap to switch to the D-pad.')}
     ${row('reduceMotion','Reduce motion',OPTS.reduceMotion,'Stills the title screen’s drifting camera and embers.')}
     ${fsOk?row('fullscreen','Fullscreen',!!document.fullscreenElement,'Hide the browser bars while you play.'):''}
     </div><div class="actions"><button type="button" class="primary" data-done>Done</button></div>`,el=>{
       el.querySelectorAll('[data-opt]').forEach(b=>b.addEventListener('click',()=>{
         const k=b.dataset.opt;
         if(k==='fullscreen'){const p=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();Promise.resolve(p).catch(()=>{}).then(()=>setTimeout(titleOptions,120));return}
+        if(k==='pad'){OPTS.pad=OPTS.pad==='dpad'?'stick':'dpad';saveOpts();applyPadMode();titleOptions();return}
         OPTS[k]=!OPTS[k];saveOpts();titleEl.classList.toggle('calm',calmMotion());titleOptions()}));
       el.querySelector('[data-done]').addEventListener('click',()=>{hidePanel();showTitle()});
     });

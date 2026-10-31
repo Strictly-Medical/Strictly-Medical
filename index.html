@@ -22,11 +22,19 @@
 <div class="stage">
   <canvas id="game" aria-label="Strictly Medical"></canvas>
   <div class="touch">
-    <button type="button" data-k="act" data-hold="1">Use</button>
-    <button type="button" data-k="heal">Flask</button>
-    <button type="button" data-k="skill">Skill</button>
-    <button type="button" data-k="roll">Dodge</button>
     <button type="button" data-k="atk" class="big">Strike</button>
+    <button type="button" data-k="roll" class="b-roll">Dodge</button>
+    <button type="button" data-k="skill" class="b-skill">Skill</button>
+    <button type="button" data-k="heal" class="b-heal">Flask</button>
+    <button type="button" data-k="act" data-hold="1" class="b-act">Use</button>
+  </div>
+  <div class="dpad" aria-label="Movement pad">
+    <div class="dpad-ring">
+      <span class="arm a-up" data-dir="up"></span><span class="arm a-right" data-dir="right"></span>
+      <span class="arm a-down" data-dir="down"></span><span class="arm a-left" data-dir="left"></span>
+      <span class="hub"></span>
+    </div>
+    <svg class="dp-arrow d-up" viewBox="0 0 20 20" style="transform:rotate(45deg)" aria-hidden="true"><path d="M10 1.5 L17.5 17 L10 12.6 L2.5 17 Z"/></svg><svg class="dp-arrow d-right" viewBox="0 0 20 20" style="transform:rotate(135deg)" aria-hidden="true"><path d="M10 1.5 L17.5 17 L10 12.6 L2.5 17 Z"/></svg><svg class="dp-arrow d-down" viewBox="0 0 20 20" style="transform:rotate(225deg)" aria-hidden="true"><path d="M10 1.5 L17.5 17 L10 12.6 L2.5 17 Z"/></svg><svg class="dp-arrow d-left" viewBox="0 0 20 20" style="transform:rotate(315deg)" aria-hidden="true"><path d="M10 1.5 L17.5 17 L10 12.6 L2.5 17 Z"/></svg>
   </div>
   <section class="title" id="title" hidden aria-label="Title screen">
     <div class="title-bg" aria-hidden="true"></div>

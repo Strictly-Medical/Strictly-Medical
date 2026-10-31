@@ -25,13 +25,36 @@ header p{margin:0;color:var(--muted);max-width:62ch}
 .keys-panel{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--muted);font-size:14px}
 @media (pointer:coarse){.keys-panel{display:none}}
 canvas{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none}
-.touch{position:absolute;right:10px;bottom:10px;display:none;gap:8px;align-items:flex-end;flex-wrap:wrap;justify-content:flex-end;max-width:58%}
-.touch button{width:58px;height:58px;border-radius:50%;border:1px solid rgba(210,171,82,.6);background:radial-gradient(circle at 50% 35%,rgba(36,32,66,.82),rgba(12,10,26,.82));color:var(--parch);font:400 13px var(--display);letter-spacing:.02em;touch-action:none;
-  box-shadow:inset 0 0 0 3px rgba(10,8,22,.8),inset 0 0 0 4px rgba(210,171,82,.25),0 4px 12px rgba(0,0,0,.45);-webkit-tap-highlight-color:transparent}
-.touch button:active{background:radial-gradient(circle at 50% 35%,rgba(80,62,40,.9),rgba(30,22,14,.9));border-color:var(--gold)}
-.touch button.big{width:76px;height:76px;border:1.5px solid var(--gold);color:#f6ead0;font-size:16px;background:radial-gradient(circle at 50% 35%,rgba(70,52,38,.88),rgba(28,20,13,.88));
+/* Touch controls. Actions sit in a thumb arc around Strike in the bottom-right corner;
+   movement is the isometric D-pad (or the canvas joystick, chosen in Options) on the left. */
+.touch,.dpad{display:none;position:absolute;bottom:max(14px,env(safe-area-inset-bottom));touch-action:none;user-select:none;-webkit-user-select:none}
+.touch{right:max(14px,env(safe-area-inset-right));width:204px;height:204px;pointer-events:none}
+.touch button{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;border:1px solid rgba(210,171,82,.6);background:radial-gradient(circle at 50% 35%,rgba(36,32,66,.84),rgba(12,10,26,.84));color:var(--parch);font:400 13px var(--display);letter-spacing:.02em;touch-action:none;pointer-events:auto;padding:0;
+  box-shadow:inset 0 0 0 3px rgba(10,8,22,.8),inset 0 0 0 4px rgba(210,171,82,.25),0 4px 12px rgba(0,0,0,.45);-webkit-tap-highlight-color:transparent;transition:transform .06s}
+.touch button.held,.touch button:active{transform:scale(.92);background:radial-gradient(circle at 50% 35%,rgba(80,62,40,.92),rgba(30,22,14,.92));border-color:var(--gold)}
+/* Strike in the corner; the others on an arc of radius 125 at 180°, 150°, 120° and 90°. */
+.touch button.big{left:calc(100% - 46px);top:calc(100% - 46px);width:88px;height:88px;margin:-44px 0 0 -44px;border:1.5px solid var(--gold);color:#f6ead0;font-size:17px;background:radial-gradient(circle at 50% 35%,rgba(70,52,38,.9),rgba(28,20,13,.9));
   box-shadow:inset 0 0 0 3px #120c07,inset 0 0 0 4px rgba(210,171,82,.4),0 0 16px rgba(210,171,82,.18),0 4px 12px rgba(0,0,0,.5)}
-@media (pointer:coarse){.touch{display:flex}.keys{display:none}}
+.touch .b-roll{left:calc(100% - 171px);top:calc(100% - 46px)}
+.touch .b-skill{left:calc(100% - 154px);top:calc(100% - 109px)}
+.touch .b-heal{left:calc(100% - 109px);top:calc(100% - 154px)}
+.touch .b-act{left:calc(100% - 46px);top:calc(100% - 171px)}
+.touch .b-act.live{border-color:var(--gold);color:#fff3d0;box-shadow:inset 0 0 0 3px rgba(10,8,22,.8),inset 0 0 0 4px rgba(210,171,82,.5),0 0 14px rgba(240,200,110,.55);animation:use-pulse 1.2s ease-in-out infinite}
+@keyframes use-pulse{50%{box-shadow:inset 0 0 0 3px rgba(10,8,22,.8),inset 0 0 0 4px rgba(210,171,82,.6),0 0 22px rgba(240,200,110,.85)}}
+.dpad{left:max(14px,env(safe-area-inset-left));width:168px;height:168px}
+.dpad-ring{position:absolute;inset:0;transform:rotate(45deg)}
+/* A plain plus-shaped pad rotated 45°, so its arms point along the grid: up = up-right on screen, right = down-right, and so on. */
+.dpad .arm{position:absolute;width:52px;height:58px;left:58px;top:0;border-radius:7px 7px 2px 2px;background:linear-gradient(rgba(36,32,66,.86),rgba(14,12,30,.86));border:1px solid rgba(210,171,82,.6);box-shadow:inset 0 0 0 2px rgba(10,8,22,.7),inset 0 0 0 3px rgba(210,171,82,.2);transform-origin:26px 84px}
+.dpad .a-right{transform:rotate(90deg)}.dpad .a-down{transform:rotate(180deg)}.dpad .a-left{transform:rotate(270deg)}
+/* Arrows sit outside the rotated ring, centred on each arm, so they always point straight out along the grid. */
+.dp-arrow{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;pointer-events:none;fill:rgba(235,226,205,.82);transition:fill .1s}
+.dp-arrow.d-up{left:123px;top:45px}.dp-arrow.d-right{left:123px;top:123px}.dp-arrow.d-down{left:45px;top:123px}.dp-arrow.d-left{left:45px;top:45px}
+.dpad.on-up .d-up,.dpad.on-right .d-right,.dpad.on-down .d-down,.dpad.on-left .d-left{fill:#fff3d0}
+.dpad .arm.on{background:linear-gradient(rgba(96,74,46,.95),rgba(36,26,16,.95));border-color:var(--gold)}
+.dpad .hub{position:absolute;left:58px;top:58px;width:52px;height:52px;background:rgba(14,12,30,.9)}
+.dpad .hub::after{content:'';position:absolute;left:50%;top:50%;width:9px;height:9px;margin:-4.5px;background:var(--gold);opacity:.65}
+@media (pointer:coarse){.touch{display:block}.keys{display:none}body.pad-dpad .dpad{display:block}}
+@media (pointer:coarse) and (max-height:430px){.touch{transform:scale(.88);transform-origin:100% 100%}.dpad{transform:scale(.88);transform-origin:0 100%}}
 button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 .panel[hidden]{display:none}
@@ -94,7 +117,7 @@ kbd{font:600 12px var(--body);border:1px solid var(--line);border-bottom-width:2
 @media (max-width:760px){.notes{grid-template-columns:1fr;gap:14px}}
 
 /* ---------- title screen ---------- */
-.on-title .touch{display:none!important}
+.on-title .touch,.on-title .dpad{display:none!important}
 .title{position:absolute;inset:0;overflow:hidden;background:#0b0a1a;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .45s ease}
 .title.in{opacity:1}
 .title-bg{position:absolute;inset:-2%;background:url(../assets/ui/title-bg.jpg) center/cover no-repeat #0b0a1a;transform:scale(1.03);animation:title-drift 48s ease-in-out infinite alternate}

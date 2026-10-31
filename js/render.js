@@ -325,7 +325,8 @@ function hud(){
   if(b&&!b.gone&&b.state!=='dormant'){const w=Math.min(440,VW-60),x=(VW-w)/2,y=VH-26;ctx.textAlign='center';ctx.font=`17px ${FELL}`;ctx.fillStyle=PARCH;ctx.shadowColor='#000';ctx.shadowBlur=6;ctx.fillText('The Lantern Warden',VW/2,y-9);ctx.shadowBlur=0;ctx.textAlign='left';
     meter(x,y,w,10,b.hp/b.maxhp,'#c4473f','#5e1b18');diamond(x-8,y+5,4.5);diamond(x+w+8,y+5,4.5);bottom=VH-56}
   // Interaction prompt
-  const pr=SC.prompt;if(pr&&!p.down){ctx.font=`600 14px ${SANS}`;const tw2=ctx.measureText(pr.label).width+36;const x=(VW-tw2)/2,y=bottom-32;frameBox(x,y,tw2,28);ctx.fillStyle=PARCH;ctx.textAlign='center';ctx.fillText(pr.label,VW/2,y+19);ctx.textAlign='left';
+  const pr=SC.prompt,live=!!(pr&&!p.down);if(live!==hud.live){hud.live=live;const ub=document.querySelector('.touch .b-act');if(ub)ub.classList.toggle('live',live)}
+  if(pr&&!p.down){ctx.font=`600 14px ${SANS}`;const tw2=ctx.measureText(pr.label).width+36;const x=(VW-tw2)/2,y=bottom-32;frameBox(x,y,tw2,28);ctx.fillStyle=PARCH;ctx.textAlign='center';ctx.fillText(pr.label,VW/2,y+19);ctx.textAlign='left';
     if(pr.prog){const v=Math.max(0,Math.min(1,pr.prog()));if(v>0){ctx.fillStyle=GOLD;ctx.fillRect(x+4,y+23,(tw2-8)*v,2)}}}
   // Banner
   if(SC.banner){const bn=SC.banner;ctx.globalAlpha=Math.max(0,Math.min(1,bn.t/.4,(bn.max-bn.t)/.3));ctx.textAlign='center';const by=narrow?VH*.5:Math.max(VH*.27,12+ph+64);

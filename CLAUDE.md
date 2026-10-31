@@ -9,7 +9,7 @@ Plain HTML, CSS and JavaScript with no build step. Hosted on GitHub Pages from `
 - `js/core.js`: canvas setup, sprite loading (`art()`, `drawArt()`), math helpers.
 - `js/data.js`: classes, failure rules, wounded knights, enemy types, and `S`, the saved game state.
 - `js/world.js`: scene object `SC`, village and dungeon layouts, party creation, grid movement, BFS pathfinding.
-- `js/input.js`: keyboard, mouse and touch.
+- `js/input.js`: keyboard, mouse and touch. On touch screens, movement is either the isometric D-pad (a plus-shaped pad rotated 45° so each arm is a grid direction; the default) or the left-half joystick, set in Options (`OPTS.pad`). Action buttons sit in a thumb arc around Strike.
 - `js/combat.js`: damage, attacks, projectiles, telegraphed attack tiles, medic actions (stabilize, carry, deliver).
 - `js/actors.js`: player control, companion AI, enemies, the Lantern Warden.
 - `js/ui.js`: end of run, dialogue panels, shops, quests.
