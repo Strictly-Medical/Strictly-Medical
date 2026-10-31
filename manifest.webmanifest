@@ -1,9 +1,9 @@
 {
-  "id": "/Strictly-Medical/?app=strictly-medical",
+  "id": "/Strictly-Medical/?app=strictly-medical-2",
   "name": "Strictly Medical",
   "short_name": "Strictly Medical",
   "description": "A co-op isometric dungeon game about a guild of medic knights who are absolutely not conquering anything.",
-  "start_url": "/Strictly-Medical/?app=strictly-medical",
+  "start_url": "/Strictly-Medical/?app=strictly-medical-2",
   "scope": "/Strictly-Medical/",
   "display": "standalone",
   "display_override": [
