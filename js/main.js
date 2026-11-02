@@ -24,7 +24,7 @@ function step(dt){
     if(!SC.failT&&heroes().every(h=>h.down)){SC.failT=2.6;banner('The Party Has Fallen',`${RULES[S.rule].name} rules apply.`,2.6)}
     if(SC.failT){SC.failT-=dt;if(SC.failT<=0)endRun('fail')}
   }
-  const p=pos(SC.player),c=iso(p.x,p.y),k=Math.min(1,dt*6);SC.cam.x+=(c[0]-SC.cam.x)*k;SC.cam.y+=(c[1]-20-SC.cam.y)*k;
+  const p=pos(SC.player),c=iso(p.x,p.y,p.z),k=Math.min(1,dt*6);SC.cam.x+=(c[0]-SC.cam.x)*k;SC.cam.y+=(c[1]-20-SC.cam.y)*k;
 }
 function ambient(dt){
   for(const o of SC.objs){

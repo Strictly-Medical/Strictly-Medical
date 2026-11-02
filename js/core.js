@@ -30,7 +30,19 @@ const FIG=1.24,BS=1.45,PROP={tree:1.5,well:1.35,banner:1.4};
 function drawArt(n,sx,sy,flip,k=1){const a=art(n);if(!a)return false;ctx.save();ctx.translate(sx,sy);ctx.scale(flip?-k:k,k);ctx.drawImage(a.im,-a.ax,-a.ay,a.w,a.h);ctx.restore();return true}
 const RUNES={'24,20':'rune2','22,20':'rune1','26,20':'rune1','24,18':'rune1','24,22':'rune1'};
 /* ---------- helpers ---------- */
-const iso=(x,y)=>[(x-y)*32,(x+y)*16];
+// Height: every tile has a level (SC.HT) and a ground height in px (SC.HZ, ZL px per level; stairs sit half a level up).
+// iso() lifts a point by the ground height of the tile under it unless z is given; isoF() is the flat projection.
+const ZL=40;
+const isoF=(x,y)=>[(x-y)*32,(x+y)*16];
+const gz=(x,y)=>{if(!SC||!SC.HZ)return 0;const a=Math.floor(x),b=Math.floor(y);return a>=0&&b>=0&&a<SC.W&&b<SC.H?SC.HZ[a][b]:0};
+const iso=(x,y,z)=>[(x-y)*32,(x+y)*16-(z===undefined?gz(x,y):z)];
+/* ---------- tiles2 atlas (assets/sprites/tiles2.png, js/tiles2.js) ---------- */
+const T2IM=typeof Image!=='undefined'?new Image():null;if(T2IM)T2IM.src='assets/sprites/tiles2.png';
+const t2ok=()=>T2IM&&T2IM.complete&&T2IM.naturalWidth>0;
+// Draw a prop anchored at its bottom centre (sx,sy). k scales, flip mirrors.
+function drawT2(n,sx,sy,flip,k=1){const t=T2[n];if(!t||!t2ok())return false;ctx.save();ctx.translate(sx,sy);ctx.scale(flip?-k:k,k);ctx.drawImage(T2IM,t.x,t.y,t.w,t.h,-t.ax,-t.ay,t.gw,t.gh);ctx.restore();return true}
+// Draw a tile top into the diamond whose top corner is (ax,ay).
+function drawTop(n,ax,ay){const t=T2[n];if(!t)return false;ctx.drawImage(T2IM,t.x,t.y,t.w,t.h,ax-t.gw/2,ay,t.gw,t.gh);return true}
 const hash=(a,b)=>{const s=Math.sin(a*127.1+b*311.7)*43758.5453;return s-Math.floor(s)};
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const ri=(a,b)=>Math.floor(a+Math.random()*(b-a+1));

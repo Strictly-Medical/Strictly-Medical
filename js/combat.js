@@ -28,7 +28,7 @@ function hitOre(o){o.hp--;burst(o.x+.5,o.y+.5,o.metal==='iron'?'#a9b8c9':'#d0874
 function oreAt(x,y){const o=inB(x,y)&&SC.B[x][y];return o&&o.type==='ore'?o:null}
 function autoFace(u,R){let best=null,bd=1e9;for(const e of SC.units){if(e.team!==1||e.gone)continue;if(e.kind==='boss'&&e.state==='dormant')continue;const al=aligned(u.tx,u.ty,e.tx,e.ty,R);if(al){const d=man(u.tx,u.ty,e.tx,e.ty);if(d<bd){bd=d;best=al}}}if(best)u.face=best}
 function cleave(u){
-  const t=tileOf(u),f=u.face,px=-f.y,py=f.x,cx=t.x+f.x,cy=t.y+f.y;const tiles=[[cx,cy],[cx+px,cy+py],[cx-px,cy-py]].filter(([x,y])=>floorAt(x,y));
+  const t=tileOf(u),f=u.face,px=-f.y,py=f.x,cx=t.x+f.x,cy=t.y+f.y;const tiles=[[cx,cy],[cx+px,cy+py],[cx-px,cy-py]].filter(([x,y])=>floorAt(x,y)&&Math.abs(SC.HZ[x][y]-SC.HZ[t.x][t.y])<=ZL*.5);
   fxTiles(tiles,'240,226,184');const dmg=CLASSES.knight.dmg+dmgBonus();
   for(const[x,y]of tiles)for(const e of foesAt(x,y))hurtFoe(e,dmg);
   const o=oreAt(cx,cy);if(o)hitOre(o);
