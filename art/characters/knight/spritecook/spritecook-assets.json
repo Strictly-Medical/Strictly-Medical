@@ -1,0 +1,13 @@
+{
+  "note": "Experimental SpriteCook output built from the ChatGPT knight (painted, not true pixel art). Not used by the game.",
+  "assets": [
+    {"label": "idle-front-src (upload of in-game standing frame)", "asset_id": "3b8e4b6f-eff0-46bb-9d80-e8a8e1e1cd8d", "file": "idle-front-src.png"},
+    {"label": "back view still", "asset_id": "dba47463-5e45-4f00-8af2-9828559dff69", "file": "back-b.png"},
+    {"label": "front ready stance", "asset_id": "43253dcd-678a-4797-b581-b901bab0d28e", "file": "ready-b.png"},
+    {"label": "back ready stance (HD raw)", "asset_id": "414e5c5a-3be2-40a8-b7c0-590d65cad846", "file": "braw-b.png"},
+    {"label": "back ready stance (upload)", "asset_id": "5224d07f-fd84-46c2-9199-2cf65de035c6", "file": "back-ready.png"},
+    {"label": "walk back, 8 frames", "asset_id": "508f8034-7ff0-4422-85e8-c2fef13c417b", "file": "walk-back.png"},
+    {"label": "sword attack front, 8 frames", "asset_id": "247d3875-8781-495c-9a9c-e3d3c046ece7", "file": "attack-front.png"},
+    {"label": "sword attack back, 8 frames", "asset_id": "57fb88cd-ec96-479f-9b5c-7feaec46ba6e", "file": "attack-back.png"}
+  ]
+}
