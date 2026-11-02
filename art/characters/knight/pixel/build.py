@@ -5,7 +5,7 @@
 from PIL import Image
 import numpy as np
 D='art/characters/knight/pixel/'
-ROWS=['walk-front','walk-back','attack-front','attack-back']
+ROWS=['walk-front2','walk-back','attack-front','attack-back']
 N=8
 def frames(name):
     im=Image.open(D+name+'.png').convert('RGBA').transpose(Image.FLIP_LEFT_RIGHT)

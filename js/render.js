@@ -101,14 +101,14 @@ function drawSpriteFigure(u,L,C,sx,sy,o){
   let row,col;
   if(swinging){row=back?C.row.atkBack:C.row.atk;col=Math.min(C.cols-1,Math.floor(at/C.atkDur*C.cols))}
   else{row=back?C.row.walkBack:C.row.walk;col=walking?fi:0}
-  // Walking: a small rise and fall each stride. Standing: a slow breath.
-  const bob=walking?-Math.abs(Math.sin(wp/C.cols*Math.PI*2))*1.2:0,breath=walking||swinging?0:Math.sin(SC.t*2.2+u.id)*.5+.5;
+  // Walking: rise through each stride and drop onto the planted foot (two steps per walk cycle), squashing slightly on each footfall. Standing: a slow breath.
+  const step=Math.abs(Math.sin(wp/C.cols*Math.PI*2)),bob=walking?-(step*2.6-.4):0,breath=walking||swinging?0:Math.sin(SC.t*2.2+u.id)*.5+.5;
   ctx.save();ctx.translate(sx,sy);
   if(o.ring){ctx.strokeStyle=o.ring;ctx.globalAlpha=.85;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,0,14,7,0,0,7);ctx.stroke();ctx.globalAlpha=1}
   ellipse(2,1,12*s,5*s,'rgba(0,0,0,.35)');
   if(u.inv>0&&u.dash>0)ctx.globalAlpha=.55;
   ctx.scale(dir*s,s);if(kneel){ctx.translate(0,1);ctx.scale(1,.9)}
-  ctx.save();ctx.translate(0,bob);if(breath)ctx.scale(1-breath*.008,1+breath*.018);
+  ctx.save();ctx.translate(0,bob);if(walking)ctx.scale(1+(1-step)*.015,1-(1-step)*.025);if(breath)ctx.scale(1-breath*.008,1+breath*.018);
   ctx.drawImage(u.flash>0?C.white:C.im,col*C.fw,row*C.fh,C.fw,C.fh,-C.ax,-C.ay,C.w,C.h);ctx.restore();
   ctx.restore();ctx.globalAlpha=1;
 }

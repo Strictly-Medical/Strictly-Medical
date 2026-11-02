@@ -1,13 +1,55 @@
 {
   "note": "Pixel-art knight used by the game (assets/sprites/knight.png via build.py).",
   "assets": [
-    {"label": "base knight, flat-topped helm (Oct 30)", "asset_id": "00321f8c-e5f4-4a6d-ab46-54e52d07898e", "file": "base-front.png"},
-    {"label": "front ready, sword lowered", "asset_id": "230abca4-9c02-40ef-b874-60ae96ffbad3", "file": "ready-front.png"},
-    {"label": "back ready, legs wrong (superseded)", "asset_id": "eace1a54-1ce7-4f64-93f9-220fbe5e8659", "file": "ready-back.png"},
-    {"label": "back ready, fixed legs", "asset_id": "590c5ea5-c45d-4dcc-bbcb-40c57738b750", "file": "ready-back2.png"},
-    {"label": "walk front", "asset_id": "ff51954b-e2f9-4448-9328-2ab30bc7e770", "file": "walk-front.png"},
-    {"label": "walk back", "asset_id": "1f338834-cb65-40a8-a895-4b3423e57444", "file": "walk-back.png"},
-    {"label": "sword attack front", "asset_id": "b3c843e1-c213-40e1-b2e3-5334d2695eba", "file": "attack-front.png"},
-    {"label": "sword attack back", "asset_id": "ca391312-01d8-4772-8a06-79a41cf12a08", "file": "attack-back.png"}
+    {
+      "label": "base knight, flat-topped helm (Oct 30)",
+      "asset_id": "00321f8c-e5f4-4a6d-ab46-54e52d07898e",
+      "file": "base-front.png"
+    },
+    {
+      "label": "front ready, sword lowered",
+      "asset_id": "230abca4-9c02-40ef-b874-60ae96ffbad3",
+      "file": "ready-front.png"
+    },
+    {
+      "label": "back ready, legs wrong (superseded)",
+      "asset_id": "eace1a54-1ce7-4f64-93f9-220fbe5e8659",
+      "file": "ready-back.png"
+    },
+    {
+      "label": "back ready, fixed legs",
+      "asset_id": "590c5ea5-c45d-4dcc-bbcb-40c57738b750",
+      "file": "ready-back2.png"
+    },
+    {
+      "label": "walk front, arm raised (superseded)",
+      "asset_id": "ff51954b-e2f9-4448-9328-2ab30bc7e770",
+      "file": "walk-front.png"
+    },
+    {
+      "label": "walk back",
+      "asset_id": "1f338834-cb65-40a8-a895-4b3423e57444",
+      "file": "walk-back.png"
+    },
+    {
+      "label": "sword attack front",
+      "asset_id": "b3c843e1-c213-40e1-b2e3-5334d2695eba",
+      "file": "attack-front.png"
+    },
+    {
+      "label": "sword attack back",
+      "asset_id": "ca391312-01d8-4772-8a06-79a41cf12a08",
+      "file": "attack-back.png"
+    },
+    {
+      "label": "front ready, free arm lowered",
+      "asset_id": "628128b0-7b9c-4f0a-8cfa-c66e979fbc2a",
+      "file": "ready-front2.png"
+    },
+    {
+      "label": "walk front with arm swing (used)",
+      "asset_id": "9b53d337-20c2-4f6b-84cd-8be35d6fa153",
+      "file": "walk-front2.png"
+    }
   ]
 }
