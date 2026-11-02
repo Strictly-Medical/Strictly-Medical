@@ -9,10 +9,13 @@ window.addEventListener('resize',resize);resize();
 
 const ART={};if(typeof Image!=='undefined')for(const[k,v]of Object.entries(SPRITES)){const im=new Image();im.src='assets/sprites/'+k+'.png';ART[k]=Object.assign({im},v)}
 const art=n=>{const a=ART[n];return a&&a.im.complete&&a.im.naturalWidth?a:null};
-// Animated character sheets: frames side by side, stored at 3x game size. w/h/ax/ay are in game pixels.
-const CHARS={knight:{src:'knight-walk',frames:5,w:38.67,h:61,ax:24.3,ay:60.6,walk:[0,1,2,3],idle:4}};
-if(typeof Image!=='undefined')for(const c of Object.values(CHARS)){const im=new Image();im.onload=()=>{const fw=im.naturalWidth/c.frames,fh=im.naturalHeight;c.fw=fw;c.fh=fh;
-  const wc=document.createElement('canvas');wc.width=im.naturalWidth;wc.height=fh;const x=wc.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-atop';x.fillStyle='#fff';x.fillRect(0,0,wc.width,fh);c.white=wc;c.ok=true};im.src='assets/sprites/'+c.src+'.png';c.im=im}
+// Animated character sheets: a grid of frames stored at 3x game size. w/h/ax/ay are in game pixels; top is the figure's height.
+// rows: walk (front), walk (back), sword attack (front), sword attack (back). Front frames face down-right, back frames up-right;
+// they are mirrored for the other two directions. The first frame of each walk row doubles as the standing pose.
+const CHARS={knight:{src:'knight',cols:8,rows:4,w:66,h:68,ax:33,ay:67,top:61,fps:12,atkDur:.42,
+  row:{walk:0,walkBack:1,atk:2,atkBack:3}}};
+if(typeof Image!=='undefined')for(const c of Object.values(CHARS)){const im=new Image();im.onload=()=>{c.fw=im.naturalWidth/c.cols;c.fh=im.naturalHeight/c.rows;
+  const wc=document.createElement('canvas');wc.width=im.naturalWidth;wc.height=im.naturalHeight;const x=wc.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-atop';x.fillStyle='#fff';x.fillRect(0,0,wc.width,wc.height);c.white=wc;c.ok=true};im.src='assets/sprites/'+c.src+'.png';c.im=im}
 // Village building sprites (assets/sprites/bld-*.png, stored at 2x), already corrected to the 2:1 grid angle by pack.py.
 // In game px: w,h size; cx,cy the centre of the base diamond; fx the x of the front corner, where the sprite is split
 // into left and right halves; smoke a chimney top.
